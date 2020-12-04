@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "mihoyo.account-id",
+      "type": "java.lang.String",
+      "description": "Description for mihoyo.account-id."
+    },
+    {
+      "name": "mihoyo.cookie-token",
+      "type": "java.lang.String",
+      "description": "Description for mihoyo.cookie-token."
+    }
+  ]
+}
