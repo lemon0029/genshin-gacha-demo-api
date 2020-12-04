@@ -1,7 +1,6 @@
-package me.yec;
+package me.yec.util;
 
 import me.yec.config.MihoyoProperties;
-import me.yec.util.Requests;
 import org.apache.http.message.BasicHeader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

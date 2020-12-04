@@ -1,6 +1,5 @@
-package me.yec;
+package me.yec.config;
 
-import me.yec.config.MihoyoProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
