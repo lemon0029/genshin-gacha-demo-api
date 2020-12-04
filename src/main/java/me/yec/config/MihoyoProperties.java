@@ -12,6 +12,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "mihoyo")
 public class MihoyoProperties {
-    private String accountID;
+    private String accountId;
     private String cookieToken;
 }

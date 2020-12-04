@@ -17,7 +17,7 @@ public class MihoyoPropertiesTest {
 
     @Test
     void simpleTest() {
-        System.out.println(mihoyoProperties.getAccountID());
+        System.out.println(mihoyoProperties.getAccountId());
         System.out.println(mihoyoProperties.getCookieToken());
     }
 }
