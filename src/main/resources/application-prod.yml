@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: your mysql / mariadb jdbc url
+    username: your datasource username
+    password: your datasource password
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+
+logging:
+  level:
+    me.yec: info
+    web: info
+  file:
+    path: your log file path
+    name: your log file name

@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/genshin_gacha_demo
+    username: root
+    password: 123456
+    schema: classpath:schema.sql
+    initialization-mode: always # 项目启动执行初始化数据表 sql
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+
+mihoyo:
+  account-id: your account id
+  cookie-token: your cookie token
+
+logging:
+  level:
+    web: debug
+    me.yec: debug
