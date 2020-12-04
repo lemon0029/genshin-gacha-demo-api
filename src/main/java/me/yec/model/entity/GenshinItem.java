@@ -6,18 +6,10 @@ package me.yec.model.entity;
  */
 public class GenshinItem {
 
-    protected ItemType type;
+    protected GenshinItemType type;
 
-    public ItemType getType() {
+    public GenshinItemType getType() {
         return type;
-    }
-
-    public void setType(ItemType type) {
-        this.type = type;
-    }
-
-    public enum ItemType {
-        WEAPON, CHARACTER
     }
 
 }

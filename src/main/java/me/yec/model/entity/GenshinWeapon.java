@@ -34,6 +34,6 @@ public class GenshinWeapon extends GenshinItem {
     private String avatar;
 
     public GenshinWeapon() {
-        this.setType(ItemType.WEAPON);
+        type = GenshinItemType.CHARACTER;
     }
 }

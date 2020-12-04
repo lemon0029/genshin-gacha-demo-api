@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.yec.config.MihoyoProperties;
 import me.yec.model.entity.GenshinCharacter;
-import me.yec.model.entity.GenshinItem;
+import me.yec.model.entity.GenshinItemType;
 import me.yec.model.entity.GenshinWeapon;
 import me.yec.repository.GenshinCharacterRepository;
 import me.yec.repository.GenshinWeaponRepository;
@@ -42,18 +42,18 @@ public class FetchGenshinItemData {
      * 定时抓取原神的角色信息
      */
     @Async
-    @Scheduled(fixedDelay = 1000 * 60 * 60 * 24 * 3, initialDelay = 5000)
+    @Scheduled(fixedDelay = 1000 * 60 * 60 * 24 * 3, initialDelay = 500000)
     public void fetchCharacters() {
-        fetchData(GenshinItem.ItemType.CHARACTER);
+        fetchData(GenshinItemType.CHARACTER);
     }
 
     /**
      * 定时抓取原神的武器信息
      */
     @Async
-    @Scheduled(fixedDelay = 1000 * 60 * 60 * 24 * 3, initialDelay = 5000)
+    @Scheduled(fixedDelay = 1000 * 60 * 60 * 24 * 3, initialDelay = 500000)
     public void fetWeapons() {
-        fetchData(GenshinItem.ItemType.WEAPON);
+        fetchData(GenshinItemType.WEAPON);
     }
 
     /**
@@ -107,7 +107,7 @@ public class FetchGenshinItemData {
      * @param dataList 数据列表
      * @param type     武器/角色类型
      */
-    private void saveGenshinItem(JSONArray dataList, GenshinItem.ItemType type) {
+    private void saveGenshinItem(JSONArray dataList, GenshinItemType type) {
         for (int i = 0; i < dataList.length(); i++) {
             // 获取 JSONObject
             JSONObject item = dataList.optJSONObject(i);
@@ -116,7 +116,7 @@ public class FetchGenshinItemData {
             String name = item.optString("name");
             String icon = item.optString("icon");
 
-            if (type == GenshinItem.ItemType.CHARACTER) {
+            if (type == GenshinItemType.CHARACTER) {
                 int avatarLevel = item.optInt("avatar_level");
                 int elementAttrId = item.optInt("element_attr_id");
                 // 创建实体类对象并设置数据
@@ -142,9 +142,9 @@ public class FetchGenshinItemData {
         }
     }
 
-    public void fetchData(GenshinItem.ItemType type) {
+    public void fetchData(GenshinItemType type) {
         String url;
-        if (type == GenshinItem.ItemType.CHARACTER) {
+        if (type == GenshinItemType.CHARACTER) {
             url = BASE_URL + "/avatar/list";
         } else {
             url = BASE_URL + "/weapon/list";
@@ -164,15 +164,15 @@ public class FetchGenshinItemData {
             } else {
                 // 获取具体的数据列表，如果有异常情况 dataList 将为 null
                 JSONArray dataList = jsonBody.optJSONObject("data").optJSONArray("list");
-                if (type == GenshinItem.ItemType.CHARACTER) {
-                    saveGenshinItem(dataList, GenshinItem.ItemType.CHARACTER); // 保存到数据库
+                if (type == GenshinItemType.CHARACTER) {
+                    saveGenshinItem(dataList, GenshinItemType.CHARACTER); // 保存到数据库
                 } else {
-                    saveGenshinItem(dataList, GenshinItem.ItemType.WEAPON); // 保存到数据库
+                    saveGenshinItem(dataList, GenshinItemType.WEAPON); // 保存到数据库
                 }
             }
         }
 
-        if (type == GenshinItem.ItemType.CHARACTER) {
+        if (type == GenshinItemType.CHARACTER) {
             log.info("fetch or update character data success");
         } else {
             log.info("fetch or update weapon data success");

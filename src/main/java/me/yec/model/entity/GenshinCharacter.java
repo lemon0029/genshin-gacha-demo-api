@@ -38,6 +38,6 @@ public class GenshinCharacter extends GenshinItem {
     private Integer rankV;
 
     public GenshinCharacter() {
-        this.setType(ItemType.CHARACTER);
+        type = GenshinItemType.CHARACTER;
     }
 }
