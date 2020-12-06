@@ -14,6 +14,18 @@ public class Result<T> {
     private String message;
     private T data;
 
+    public static <S> Result<S> error(int code, String message, S data) {
+        Result<S> result = new Result<>();
+        result.setCode(code);
+        result.setMessage(message);
+        result.setData(data);
+        return result;
+    }
+
+    public static <S> Result<S> error(S data) {
+        return error(HttpStatus.FORBIDDEN.value(), "error", data);
+    }
+
     public static <S> Result<S> ok(int code, String message, S data) {
         Result<S> result = new Result<>();
         result.setCode(code);

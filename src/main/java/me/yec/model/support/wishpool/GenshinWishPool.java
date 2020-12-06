@@ -2,6 +2,7 @@ package me.yec.model.support.wishpool;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * @date 12/4/20 10:39 PM
  */
 @Data
-public class GenshinWishPool {
+public class GenshinWishPool implements Serializable {
     public GenshinWishPoolType type;
     public String wishPoolId;
     public int lastGet4Count = 0; // 上一次获得4星到现在抽了几次

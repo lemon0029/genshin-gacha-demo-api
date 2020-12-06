@@ -49,6 +49,28 @@ public class GenshinItemServiceImpl implements GenshinItemService {
         }
     }
 
+    public List<GenshinItem> findGiftById(List<Long> itemIds) {
+        List<GenshinCharacter> characters = genshinCharacterRepository.findAllById(itemIds);
+        List<GenshinWeapon> weapons = genshinWeaponRepository.findAllById(itemIds);
+        List<GenshinItem> genshinItems = new ArrayList<>();
+        for (Long itemId : itemIds) {
+            for (GenshinCharacter character : characters) {
+                if (character.getId().equals(itemId)) {
+                    genshinItems.add(character);
+                    break;
+                }
+            }
+
+            for (GenshinWeapon weapon : weapons) {
+                if (weapon.getId().equals(itemId)) {
+                    genshinItems.add(weapon);
+                    break;
+                }
+            }
+        }
+        return genshinItems;
+    }
+
     private Sort.Direction checkOrder(String order) {
         if ("asc".equals(order)) {
             return Sort.Direction.ASC;

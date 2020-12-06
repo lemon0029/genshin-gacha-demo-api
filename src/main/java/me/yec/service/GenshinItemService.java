@@ -24,4 +24,12 @@ public interface GenshinItemService {
     List<GenshinCharacter> findAllGenshinCharacter(String sort, String order);
 
     List<GenshinWeapon> findAllGenshinWeapon(String sort, String order);
+
+    /**
+     * 根据 ID 从数据库中提取数据
+     *
+     * @param itemIds 指定ID列表
+     * @return GenshinItem 对象列表
+     */
+    List<GenshinItem> findGiftById(List<Long> itemIds);
 }

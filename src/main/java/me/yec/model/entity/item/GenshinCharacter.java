@@ -21,7 +21,7 @@ import javax.persistence.Table;
 public class GenshinCharacter extends GenshinItem {
 
     @Id
-    private long id;
+    private Long id;
 
     // 角色名称
     private String name;
