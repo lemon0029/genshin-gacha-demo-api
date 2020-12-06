@@ -10,6 +10,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 import java.io.IOException;
 import java.security.SecureRandom;
@@ -89,6 +91,32 @@ public class Requests {
         int i = random.nextInt(USER_AGENTS.size());
         return USER_AGENTS.get(i);
     }
+
+    /**
+     * 将字符串数据转换成 JSONObject 对象
+     *
+     * @param data 字符串数据
+     * @return JSONObject 对象
+     */
+    public static JSONObject parseOf(String data) {
+        try {
+            return new JSONObject(data);
+        } catch (JSONException e) {
+            log.error("parse string-data to json-like object error ({})", e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * 判断响应体是否正常
+     *
+     * @param jsonObject JSONObject
+     * @return boolean
+     */
+    public static boolean respIsError(JSONObject jsonObject) {
+        return jsonObject.optInt("retcode", -1) != 0 || !"OK".equals(jsonObject.optString("message"));
+    }
+
 
     /**
      * 获取基础的 RequestBuilder 对象，对请求头只设置了一个用户代理

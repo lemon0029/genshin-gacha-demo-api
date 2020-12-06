@@ -1,6 +1,6 @@
 package me.yec.repository;
 
-import me.yec.model.entity.genshin.item.GenshinCharacter;
+import me.yec.model.entity.item.GenshinCharacter;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

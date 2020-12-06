@@ -1,7 +1,7 @@
 package me.yec.controller;
 
 import lombok.RequiredArgsConstructor;
-import me.yec.model.entity.genshin.item.GenshinItem;
+import me.yec.model.entity.item.GenshinItem;
 import me.yec.model.support.Result;
 import me.yec.service.GenshinItemService;
 import org.springframework.web.bind.annotation.GetMapping;

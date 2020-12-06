@@ -1,4 +1,4 @@
-package me.yec.model.entity.genshin.item;
+package me.yec.model.entity.item;
 
 /**
  * 原神角色/武器枚举

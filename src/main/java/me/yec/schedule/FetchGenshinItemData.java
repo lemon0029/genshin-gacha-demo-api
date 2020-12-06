@@ -3,16 +3,15 @@ package me.yec.schedule;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.yec.config.MihoyoProperties;
-import me.yec.model.entity.genshin.item.GenshinCharacter;
-import me.yec.model.entity.genshin.item.GenshinItemType;
-import me.yec.model.entity.genshin.item.GenshinWeapon;
+import me.yec.model.entity.item.GenshinCharacter;
+import me.yec.model.entity.item.GenshinItemType;
+import me.yec.model.entity.item.GenshinWeapon;
 import me.yec.repository.GenshinCharacterRepository;
 import me.yec.repository.GenshinWeaponRepository;
 import me.yec.util.Requests;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -77,31 +76,6 @@ public class FetchGenshinItemData {
     }
 
     /**
-     * 将字符串数据转换成 JSONObject 对象
-     *
-     * @param data 字符串数据
-     * @return JSONObject 对象
-     */
-    private JSONObject parseOf(String data) {
-        try {
-            return new JSONObject(data);
-        } catch (JSONException e) {
-            log.error("parse string-data to json-lick object error ({})", e.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * 判断响应体是否正常
-     *
-     * @param jsonObject JSONObject
-     * @return boolean
-     */
-    private boolean respIsError(JSONObject jsonObject) {
-        return jsonObject.optInt("retcode", -1) != 0 || !"OK".equals(jsonObject.optString("message"));
-    }
-
-    /**
      * 武器和角色数据高度相似，采用一个方法将数据保存到数据库
      *
      * @param dataList 数据列表
@@ -155,11 +129,11 @@ public class FetchGenshinItemData {
         // post 请求的 body 未作非空判断
         String body = Requests.post(url, getHeaderOfCookie(), data);
         // jsonBody 为空则说明转换异常
-        JSONObject jsonBody = parseOf(body);
+        JSONObject jsonBody = Requests.parseOf(body);
 
         if (jsonBody != null) {
             // 判断响应内容是否符合预期结果，可能出现 cookie 失效提示需要登录的结果
-            if (respIsError(jsonBody)) {
+            if (Requests.respIsError(jsonBody)) {
                 log.warn("response body is not expected");
             } else {
                 // 获取具体的数据列表，如果有异常情况 dataList 将为 null
