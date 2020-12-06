@@ -1,4 +1,4 @@
-package me.yec.model.entity;
+package me.yec.model.entity.genshin.item;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,8 +34,8 @@ public class GenshinCharacter extends GenshinItem {
     private Integer CharacterAttrId;
 
     // 角色星级（5星，4星...）
-    @Column(name = "rank_v")
-    private Integer rankV;
+    @Column(name = "ranting")
+    private Integer ranting;
 
     public GenshinCharacter() {
         type = GenshinItemType.CHARACTER;

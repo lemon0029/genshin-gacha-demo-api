@@ -1,6 +1,6 @@
 package me.yec.service;
 
-import me.yec.model.entity.GenshinItem;
+import me.yec.model.entity.genshin.item.GenshinItem;
 
 import java.util.List;
 

@@ -1,10 +1,10 @@
 package me.yec.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import me.yec.model.entity.GenshinCharacter;
-import me.yec.model.entity.GenshinItem;
-import me.yec.model.entity.GenshinItemType;
-import me.yec.model.entity.GenshinWeapon;
+import me.yec.model.entity.genshin.item.GenshinCharacter;
+import me.yec.model.entity.genshin.item.GenshinItem;
+import me.yec.model.entity.genshin.item.GenshinItemType;
+import me.yec.model.entity.genshin.item.GenshinWeapon;
 import me.yec.repository.GenshinCharacterRepository;
 import me.yec.repository.GenshinWeaponRepository;
 import me.yec.service.GenshinItemService;

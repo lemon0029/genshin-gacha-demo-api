@@ -1,4 +1,4 @@
-package me.yec.model.entity;
+package me.yec.model.entity.genshin.item;
 
 /**
  * @author yec

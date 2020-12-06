@@ -3,9 +3,9 @@ package me.yec.schedule;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.yec.config.MihoyoProperties;
-import me.yec.model.entity.GenshinCharacter;
-import me.yec.model.entity.GenshinItemType;
-import me.yec.model.entity.GenshinWeapon;
+import me.yec.model.entity.genshin.item.GenshinCharacter;
+import me.yec.model.entity.genshin.item.GenshinItemType;
+import me.yec.model.entity.genshin.item.GenshinWeapon;
 import me.yec.repository.GenshinCharacterRepository;
 import me.yec.repository.GenshinWeaponRepository;
 import me.yec.util.Requests;
@@ -125,7 +125,7 @@ public class FetchGenshinItemData {
                 genshinCharacter.setName(name);
                 genshinCharacter.setAvatar(icon);
                 genshinCharacter.setCharacterAttrId(elementAttrId);
-                genshinCharacter.setRankV(avatarLevel);
+                genshinCharacter.setRanting(avatarLevel);
                 // 保存到数据库
                 genshinCharacterRepository.save(genshinCharacter);
             } else {
@@ -135,7 +135,7 @@ public class FetchGenshinItemData {
                 genshinWeapon.setId(id);
                 genshinWeapon.setName(name);
                 genshinWeapon.setAvatar(icon);
-                genshinWeapon.setRankV(weaponLevel);
+                genshinWeapon.setRanting(weaponLevel);
                 // 保存到数据库
                 genshinWeaponRepository.save(genshinWeapon);
             }

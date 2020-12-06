@@ -1,4 +1,4 @@
-package me.yec.model.entity;
+package me.yec.model.entity.genshin.item;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -27,8 +27,8 @@ public class GenshinWeapon extends GenshinItem {
     private String name;
 
     // 武器星级
-    @Column(name = "rank_v")
-    private Integer rankV;
+    @Column(name = "ranting")
+    private Integer ranting;
 
     // 武器图片
     private String avatar;
