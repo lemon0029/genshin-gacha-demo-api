@@ -9,5 +9,7 @@ import me.yec.core.LotteryUser;
 public interface SimpleAuthService {
     String doAuth();
 
-    LotteryUser getCurrentUser(String sessionId);
+    LotteryUser getCurrentUser(String vid);
+
+    void updateUser(String vid, LotteryUser lotteryUser);
 }

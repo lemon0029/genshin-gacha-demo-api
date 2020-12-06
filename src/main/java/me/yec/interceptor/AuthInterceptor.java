@@ -12,7 +12,6 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  * @author yec
@@ -29,9 +28,17 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
-        HttpSession session = request.getSession();
+        String vid = request.getParameter("vid");
         ValueOperations<String, LotteryUser> ops = lotteryUserRedisTemplate.opsForValue();
-        LotteryUser lotteryUser = ops.get(session.getId());
+        if (vid == null) {
+            Result<Object> error = Result.error(null);
+            ServletOutputStream outputStream = response.getOutputStream();
+            mapper.writeValue(outputStream, error);
+            return false;
+        }
+
+        LotteryUser lotteryUser = ops.get(vid);
+
         if (lotteryUser == null) {
             Result<Object> error = Result.error(null);
             ServletOutputStream outputStream = response.getOutputStream();

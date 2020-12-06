@@ -40,4 +40,10 @@ public class SimpleAuthServiceImpl implements SimpleAuthService {
         ValueOperations<String, LotteryUser> opsForValue = lotteryUserRedisTemplate.opsForValue();
         return opsForValue.get(sessionId);
     }
+
+    @Override
+    public void updateUser(String vid, LotteryUser lotteryUser) {
+        ValueOperations<String, LotteryUser> opsForValue = lotteryUserRedisTemplate.opsForValue();
+        opsForValue.set(vid, lotteryUser);
+    }
 }

@@ -1,5 +1,6 @@
 package me.yec.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import me.yec.model.entity.item.GenshinItem;
 
@@ -12,6 +13,10 @@ import java.util.List;
 @Data
 public class GenshinWishDTO {
 
+    @JsonProperty("wish_gifts")
     private List<GenshinItem> wishGifts;
+
+    @JsonProperty("wish_statistic")
+    private GenshinWishStatisticDTO genshinWishStatisticDTO;
 
 }
