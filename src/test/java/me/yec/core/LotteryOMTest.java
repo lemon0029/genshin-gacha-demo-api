@@ -15,7 +15,7 @@ class LotteryOMTest {
 
         for (int i = 0; i < 10; i++) {
             LotteryUser lotteryUser = new LotteryUser();
-            List<Integer> gacha = LotteryOM.gacha(10, lotteryUser);
+            List<Integer> gacha = LotteryOM.gacha(10, 0, 0);
             System.out.println(gacha);
         }
 
@@ -25,7 +25,7 @@ class LotteryOMTest {
     void gacha90() {
         LotteryUser lotteryUser = new LotteryUser();
 
-        List<Integer> gacha = LotteryOM.gacha(90, lotteryUser);
+        List<Integer> gacha = LotteryOM.gacha(90, 0, 0);
         for (Integer integer : gacha) {
             System.out.println(integer);
         }

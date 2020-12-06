@@ -11,8 +11,10 @@ import me.yec.util.Requests;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.domain.Example;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -46,8 +48,11 @@ public class FetchGenshinGachaPoolData {
         this.genshinGachaPoolItemRepository = genshinGachaPoolItemRepository;
     }
 
-    //    @Async
-//    @Scheduled(initialDelay = 5000, fixedDelay = 1000 * 60 * 60 * 24 * 10)
+    /**
+     * 定时更新池子列表，官方这个接口只有三个正在抽奖的池子，其它的得另外想办法...
+     */
+    @Async
+    @Scheduled(initialDelay = 5000, fixedDelay = 1000 * 60 * 60 * 24 * 10)
     public void fetchGachaList() {
         String url = BASE_URL + "/gacha/list.json";
 
@@ -83,8 +88,11 @@ public class FetchGenshinGachaPoolData {
         }
     }
 
-    //    @Async
-//    @Scheduled(initialDelay = 5000, fixedDelay = 1000 * 60 * 60 * 24 * 10)
+    /**
+     * 定时抓取池子的信息，一般来说半个月更新一次就好了
+     */
+    @Async
+    @Scheduled(initialDelay = 5000, fixedDelay = 1000 * 60 * 60 * 24 * 10)
     public void fetchGachaPoolInfo() {
         List<GenshinGachaPool> gachaPools = genshinGachaPoolRepository.findAll();
         if (gachaPools.size() == 0) log.info("nothing gacha pool info can updatable");
@@ -168,12 +176,15 @@ public class FetchGenshinGachaPoolData {
 
             gachaPoolItem.setGachaId(jsonObject.optInt("gacha_id"));
             gachaPoolItem.setUp(jsonObject.optInt("is_up") == 1);
+
+            // Venti 池的概率数据显示不一样...不过一般不用在乎...
             String probStr;
             if (jsonObject.optJSONObject("prob") == null)
                 probStr = jsonObject.optString("prob");
             else
                 probStr = jsonObject.optJSONObject("prob").optString("prob");
             gachaPoolItem.setProb(strPercentToDouble(probStr));
+
             gachaPoolItem.setName(jsonObject.optString("item_name"));
             gachaPoolItem.setType(jsonObject.optString("item_type"));
 
@@ -189,6 +200,10 @@ public class FetchGenshinGachaPoolData {
 
             gachaPoolItem.setRanting(ranting);
 
+            /* 由于多个池子包含同样的角色，所以使用子增长 ID
+                而 Spring data jap 在不指定 id 的时候执行 save 方法就是插入
+                因此首先要判断是否包含当前数据再做更新（或插入）
+             */
             Example<GenshinGachaPoolItem> itemExample = Example.of(gachaPoolItem);
             Optional<GenshinGachaPoolItem> one = genshinGachaPoolItemRepository.findOne(itemExample);
             if (one.isEmpty()) {

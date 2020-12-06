@@ -26,15 +26,14 @@ public class LotteryOM {
     /**
      * 实现简易的抽奖方法
      *
-     * @param n           抽奖次数
-     * @param lotteryUser 抽奖用户对象
+     * @param n             抽奖次数
+     * @param lastGet4Count 上一次获得4星到现在抽了几次
+     * @param lastGet5Count 上一次获得5星到现在抽了几次
      * @return 抽奖结果集合（包含 3 4 5）
      */
-    public static List<Integer> gacha(int n, LotteryUser lotteryUser) {
+    public static List<Integer> gacha(int n, int lastGet4Count, int lastGet5Count) {
 
         List<Integer> result = new ArrayList<>(); // 抽奖结果（存放 3 4 5 ...）
-        int lastGet5Count = lotteryUser.lastGet5Count;
-        int lastGet4Count = lotteryUser.lastGet4Count;
 
         for (int i = 0; i < n; i++) {
             boolean get4Star = false; // 默认未获得4星
@@ -82,10 +81,6 @@ public class LotteryOM {
             }
 
         }
-
-        // 更新抽奖者的信息
-        lotteryUser.lastGet4Count = lastGet4Count;
-        lotteryUser.lastGet5Count = lastGet5Count;
 
         return result;
     }

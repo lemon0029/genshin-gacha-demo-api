@@ -1,6 +1,8 @@
 package me.yec.service;
 
+import me.yec.model.entity.item.GenshinCharacter;
 import me.yec.model.entity.item.GenshinItem;
+import me.yec.model.entity.item.GenshinWeapon;
 
 import java.util.List;
 
@@ -18,4 +20,8 @@ public interface GenshinItemService {
      * @return GenshinItem 集合
      */
     List<? extends GenshinItem> findAllGenshinItem(String type, String sort, String order);
+
+    List<GenshinCharacter> findAllGenshinCharacter(String sort, String order);
+
+    List<GenshinWeapon> findAllGenshinWeapon(String sort, String order);
 }

@@ -1,5 +1,10 @@
 package me.yec.core;
 
+import me.yec.model.support.wishpool.GenshinWishPool;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 抽奖用户
  *
@@ -7,11 +12,5 @@ package me.yec.core;
  * @date 12/6/20 12:25 PM
  */
 public class LotteryUser {
-    public int lastGet5Count;
-    public int lastGet4Count;
-
-    public LotteryUser() {
-        this.lastGet4Count = 0;
-        this.lastGet5Count = 0;
-    }
+    private final List<GenshinWishPool> wishPools = new ArrayList<>();
 }

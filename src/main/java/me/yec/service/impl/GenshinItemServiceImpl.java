@@ -38,14 +38,7 @@ public class GenshinItemServiceImpl implements GenshinItemService {
             return genshinItems;
         } else {
             // 判断排序方向
-            Sort.Direction direction;
-            if ("asc".equals(order)) {
-                direction = Sort.Direction.ASC;
-            } else if ("desc".equals(order)) {
-                direction = Sort.Direction.DESC;
-            } else {
-                direction = Sort.Direction.ASC;
-            }
+            Sort.Direction direction = checkOrder(order);
 
             // sort 默认值为 id, direction 默认为 asc （也就是安装 id 升序）
             if (GenshinItemType.CHARACTER.name().equals(type.toUpperCase())) {
@@ -54,5 +47,28 @@ public class GenshinItemServiceImpl implements GenshinItemService {
                 return genshinWeaponRepository.findAll(Sort.by(direction, sort));
             }
         }
+    }
+
+    private Sort.Direction checkOrder(String order) {
+        if ("asc".equals(order)) {
+            return Sort.Direction.ASC;
+        } else if ("desc".equals(order)) {
+            return Sort.Direction.DESC;
+        } else {
+            return Sort.Direction.ASC;
+        }
+    }
+
+
+    @Override
+    public List<GenshinCharacter> findAllGenshinCharacter(String sort, String order) {
+        Sort.Direction direction = checkOrder(order);
+        return genshinCharacterRepository.findAll(Sort.by(direction, sort));
+    }
+
+    @Override
+    public List<GenshinWeapon> findAllGenshinWeapon(String sort, String order) {
+        Sort.Direction direction = checkOrder(order);
+        return genshinWeaponRepository.findAll(Sort.by(direction, sort));
     }
 }
