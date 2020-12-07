@@ -47,7 +47,7 @@ public class WishOMUtils {
      * @return 奖励ID
      */
     public static Long randomGachaPoolItem(List<GenshinGachaPoolItem> items) {
-        // 这样写可能优点问题...
+        // 这样写似乎有点问题...
         int i = random.nextInt(items.size());
         GenshinGachaPoolItem gachaPoolItem = items.get(i);
         return gachaPoolItem.getItemId();

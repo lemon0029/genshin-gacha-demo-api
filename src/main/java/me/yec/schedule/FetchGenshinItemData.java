@@ -1,6 +1,5 @@
 package me.yec.schedule;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.yec.config.MihoyoProperties;
 import me.yec.model.entity.item.GenshinCharacter;
@@ -19,6 +18,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 /**
  * 定时获取原神角色/武器信息
  *
@@ -29,7 +32,6 @@ import org.springframework.stereotype.Component;
 @Component
 @EnableAsync
 @EnableScheduling
-@RequiredArgsConstructor
 public class FetchGenshinItemData {
 
     private static final String BASE_URL = "https://api-takumi.mihoyo.com/event/e20200928calculate/v1";
@@ -37,11 +39,22 @@ public class FetchGenshinItemData {
     private final GenshinCharacterRepository genshinCharacterRepository;
     private final GenshinWeaponRepository genshinWeaponRepository;
 
+    public FetchGenshinItemData(MihoyoProperties mihoyoProperties,
+                                GenshinCharacterRepository genshinCharacterRepository,
+                                GenshinWeaponRepository genshinWeaponRepository) {
+        this.mihoyoProperties = mihoyoProperties;
+        this.genshinCharacterRepository = genshinCharacterRepository;
+        this.genshinWeaponRepository = genshinWeaponRepository;
+
+        // 初始化图片保存路径
+        initDir(mihoyoProperties.getImgSaveDir());
+    }
+
     /**
      * 定时抓取原神的角色信息
      */
     @Async
-    @Scheduled(fixedDelay = 1000 * 60 * 60 * 24 * 3, initialDelay = 500000)
+    @Scheduled(initialDelay = 3600000, fixedDelay = 864000000)
     public void fetchCharacters() {
         fetchData(GenshinItemType.CHARACTER);
     }
@@ -50,18 +63,9 @@ public class FetchGenshinItemData {
      * 定时抓取原神的武器信息
      */
     @Async
-    @Scheduled(fixedDelay = 1000 * 60 * 60 * 24 * 3, initialDelay = 500000)
+    @Scheduled(initialDelay = 3600000, fixedDelay = 864000000)
     public void fetWeapons() {
         fetchData(GenshinItemType.WEAPON);
-    }
-
-    /**
-     * 角色属性（名称）没有太大的必要...就不实现了
-     */
-//    @Async
-//    @Scheduled(fixedDelay = 1000 * 60 * 60 * 24 * 3, initialDelay = 50000000)
-    public void fetchCharacterAttributes() {
-//        String url = BASE_URL + "/item/filter";
     }
 
     /**
@@ -73,6 +77,81 @@ public class FetchGenshinItemData {
         String accountId = mihoyoProperties.getAccountId();
         String cookieToken = mihoyoProperties.getCookieToken();
         return new BasicHeader("cookie", String.format("account_id=%s;cookie_token=%s", accountId, cookieToken));
+    }
+
+    /**
+     * 从网络 URL 保存角色头像到文件夹中
+     * 暂时来说角色的网络链接和武器的网络链接路径格式一致通用。
+     *
+     * @param url 图片外链
+     * @param dir 保存路径
+     * @return 文件名
+     */
+    private String saveImageToDirFromUrl(String url, String dir) {
+        /*
+         * 外链类似：
+         * https://uploadstatic.mihoyo.com/hk4e/e20200928calculate/item_icon_745c4j/56e74fae596e40b20d65a666ee5889ed.png
+         * https://uploadstatic.mihoyo.com/hk4e/e20200928calculate/item_icon_745c4j/49d06da043a93d0b7abe0833f729152a.png
+         */
+        String imageName = url.split("item_icon_.*/")[1];
+        byte[] bytes = Requests.getBytes(url);
+        File file = new File(dir + imageName);
+        saveImageToFileFromBytes(file, bytes);
+        return imageName;
+    }
+
+    /**
+     * 初始化图片保存路径
+     *
+     * @param url 目录
+     */
+    private void initDir(String url) {
+        File file = new File(url);
+        if (!file.exists()) {
+            boolean mkdir = file.mkdirs();
+            if (mkdir) {
+                log.info("create directory[{}] success!", url);
+            } else {
+                log.info("create directory[{}] failed!", url);
+            }
+        } else {
+            log.info("img directory[{}] is existed", url);
+        }
+    }
+
+    /**
+     * 保存图片（字节）到文件中
+     *
+     * @param file  指定保存文件
+     * @param bytes 字节
+     */
+    private void saveImageToFileFromBytes(File file, byte[] bytes) {
+        if (!file.exists()) {
+            FileOutputStream outputStream = null;
+            try {
+                // 如果该文件不存在则创建新文件（待完善）
+                boolean newFile = file.createNewFile(); // createNewFile 方法会抛出 IO 异常
+                if (newFile) {
+                    outputStream = new FileOutputStream(file);
+                    outputStream.write(bytes);
+                    outputStream.flush();
+                    log.info("save picture[{}] success", file);
+                }
+            } catch (IOException e) {
+                log.error("create new file[{}] failed!", file.getAbsolutePath());
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (outputStream != null) {
+                        outputStream.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            log.info("picture[{}] is existed", file);
+        }
     }
 
     /**
@@ -89,6 +168,10 @@ public class FetchGenshinItemData {
             long id = item.optLong("id");
             String name = item.optString("name");
             String icon = item.optString("icon");
+            String imgSaveDir = mihoyoProperties.getImgSaveDir();
+            if (!imgSaveDir.endsWith("/")) imgSaveDir += "/";
+            String saveImageName = saveImageToDirFromUrl(icon, imgSaveDir);
+            icon = "img/" + saveImageName;
 
             if (type == GenshinItemType.CHARACTER) {
                 int avatarLevel = item.optInt("avatar_level");

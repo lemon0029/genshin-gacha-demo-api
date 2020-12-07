@@ -10,6 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -20,10 +21,23 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebAppConfig implements WebMvcConfigurer {
 
     private AuthInterceptor authInterceptor;
+    private MihoyoProperties mihoyoProperties;
+
+    @Autowired
+    public void setMihoyoProperties(MihoyoProperties mihoyoProperties) {
+        this.mihoyoProperties = mihoyoProperties;
+    }
 
     @Autowired
     public void setAuthInterceptor(AuthInterceptor authInterceptor) {
         this.authInterceptor = authInterceptor;
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        String getImgSaveDir = mihoyoProperties.getImgSaveDir();
+        registry.addResourceHandler("img/**")
+                .addResourceLocations("file:" + getImgSaveDir);
     }
 
     @Bean

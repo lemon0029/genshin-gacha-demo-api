@@ -14,4 +14,5 @@ import org.springframework.context.annotation.Configuration;
 public class MihoyoProperties {
     private String accountId;
     private String cookieToken;
+    private String imgSaveDir;
 }

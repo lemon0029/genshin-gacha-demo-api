@@ -50,9 +50,11 @@ public class FetchGenshinGachaPoolData {
 
     /**
      * 定时更新池子列表，官方这个接口只有三个正在抽奖的池子，其它的得另外想办法...
+     * <p>
+     * 首次运行延时 1 小时后执行（本地没资源的话建议启动就执行，置为0即可）
      */
     @Async
-    @Scheduled(initialDelay = 5000, fixedDelay = 1000 * 60 * 60 * 24 * 10)
+    @Scheduled(initialDelay = 3600000, fixedDelay = 864000000)
     public void fetchGachaList() {
         String url = BASE_URL + "/gacha/list.json";
 
@@ -92,7 +94,7 @@ public class FetchGenshinGachaPoolData {
      * 定时抓取池子的信息，一般来说半个月更新一次就好了
      */
     @Async
-    @Scheduled(initialDelay = 5000, fixedDelay = 1000 * 60 * 60 * 24 * 10)
+    @Scheduled(initialDelay = 3600000, fixedDelay = 864000000)
     public void fetchGachaPoolInfo() {
         List<GenshinGachaPool> gachaPools = genshinGachaPoolRepository.findAll();
         if (gachaPools.size() == 0) log.info("nothing gacha pool info can updatable");

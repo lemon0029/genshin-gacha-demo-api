@@ -2,10 +2,7 @@ package me.yec.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.Header;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -47,6 +44,17 @@ public class Requests {
      */
     public static String get(String url) {
         return get(url, null);
+    }
+
+    public static byte[] getBytes(String url) {
+        HttpUriRequest build = baseRequestBuilder(HttpGet.METHOD_NAME, url).build();
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            CloseableHttpResponse execute = httpClient.execute(build);
+            return execute.getEntity().getContent().readAllBytes();
+        } catch (IOException e) {
+            log.error("http request error ({})", e.getMessage());
+            return null;
+        }
     }
 
     /**
