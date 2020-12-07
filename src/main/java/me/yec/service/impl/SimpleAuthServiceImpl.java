@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author yec
@@ -22,6 +23,7 @@ public class SimpleAuthServiceImpl implements SimpleAuthService {
     private final RedisTemplate<String, LotteryUser> lotteryUserRedisTemplate;
     private final HttpSession httpSession;
 
+
     @Override
     public String doAuth() {
         ValueOperations<String, LotteryUser> opsForValue = lotteryUserRedisTemplate.opsForValue();
@@ -32,13 +34,14 @@ public class SimpleAuthServiceImpl implements SimpleAuthService {
         }
 
         opsForValue.set(httpSession.getId(), lotteryUser);
+        lotteryUserRedisTemplate.expire(httpSession.getId(), 1L, TimeUnit.DAYS); // 默认保存一天
         return httpSession.getId();
     }
 
     @Override
-    public LotteryUser getCurrentUser(String sessionId) {
+    public LotteryUser getCurrentUser(String vid) {
         ValueOperations<String, LotteryUser> opsForValue = lotteryUserRedisTemplate.opsForValue();
-        return opsForValue.get(sessionId);
+        return opsForValue.get(vid);
     }
 
     @Override
