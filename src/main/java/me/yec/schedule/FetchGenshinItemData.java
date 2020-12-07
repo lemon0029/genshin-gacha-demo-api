@@ -58,8 +58,8 @@ public class FetchGenshinItemData {
     /**
      * 角色属性（名称）没有太大的必要...就不实现了
      */
-    @Async
-    @Scheduled(fixedDelay = 1000 * 60 * 60 * 24 * 3, initialDelay = 50000000)
+//    @Async
+//    @Scheduled(fixedDelay = 1000 * 60 * 60 * 24 * 3, initialDelay = 50000000)
     public void fetchCharacterAttributes() {
 //        String url = BASE_URL + "/item/filter";
     }
@@ -69,7 +69,7 @@ public class FetchGenshinItemData {
      *
      * @return 请求头
      */
-    private Header getHeaderOfCookie() {
+    private Header initHeaderOfCookie() {
         String accountId = mihoyoProperties.getAccountId();
         String cookieToken = mihoyoProperties.getCookieToken();
         return new BasicHeader("cookie", String.format("account_id=%s;cookie_token=%s", accountId, cookieToken));
@@ -127,7 +127,7 @@ public class FetchGenshinItemData {
         String data = "{\"page\": 1, \"size\": 100}";
 
         // post 请求的 body 未作非空判断
-        String body = Requests.post(url, getHeaderOfCookie(), data);
+        String body = Requests.post(url, initHeaderOfCookie(), data);
         // jsonBody 为空则说明转换异常
         JSONObject jsonBody = Requests.parseOf(body);
 

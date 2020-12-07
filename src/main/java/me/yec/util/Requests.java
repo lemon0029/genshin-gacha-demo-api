@@ -102,7 +102,7 @@ public class Requests {
         try {
             return new JSONObject(data);
         } catch (JSONException e) {
-            log.error("parse string-data to json-like object error ({})", e.getMessage());
+            log.warn("parse string-data to json-like object error ({})", e.getMessage());
             return null;
         }
     }

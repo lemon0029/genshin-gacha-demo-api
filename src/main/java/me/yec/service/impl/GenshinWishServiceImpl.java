@@ -3,6 +3,7 @@ package me.yec.service.impl;
 import lombok.RequiredArgsConstructor;
 import me.yec.core.LotteryUser;
 import me.yec.core.WishOM;
+import me.yec.exception.AppException;
 import me.yec.model.dto.GenshinWishDTO;
 import me.yec.model.dto.GenshinWishStatisticDTO;
 import me.yec.model.entity.item.GenshinItem;
@@ -34,11 +35,19 @@ public class GenshinWishServiceImpl implements GenshinWishService {
     @Override
     public GenshinWishDTO wishByPoolId(int n, String poolId, LotteryUser lotteryUser) {
         GenshinWishDTO genshinWishDTO = new GenshinWishDTO();
+
+        // 使用 WishOM 抽取 GenshinItem 的 Ids
         wishOM.setLotteryUser(lotteryUser);
         List<Long> giftIds = wishOM.wishByPoolId(poolId, n);
+
+        // 根据指定的 Ids 获取 GenshinItem 列表
         List<GenshinItem> giftById = genshinItemService.findGiftById(giftIds);
         genshinWishDTO.setWishGifts(giftById);
+
+        // 根据池子ID获取当前用户的对应池子对象
         GenshinWishPool wishPool = getGenshinWishPool(poolId, lotteryUser);
+
+        // 初始化当前池子统计对象
         GenshinWishStatisticDTO instance = GenshinWishStatisticDTO.getInstance(wishPool);
         genshinWishDTO.setGenshinWishStatisticDTO(instance);
         return genshinWishDTO;
@@ -50,7 +59,7 @@ public class GenshinWishServiceImpl implements GenshinWishService {
                 .filter(pool -> pool.wishPoolId.equals(poolId)).findFirst();
 
         return genshinWishPoolOptional
-                .orElseThrow(() -> new RuntimeException(String.format("gacha pool id[%s] not found", poolId)));
+                .orElseThrow(() -> new AppException(String.format("gacha pool[%s] not found", poolId)));
     }
 
 

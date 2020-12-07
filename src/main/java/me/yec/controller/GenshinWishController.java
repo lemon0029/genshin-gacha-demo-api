@@ -38,6 +38,8 @@ public class GenshinWishController {
                                        @RequestParam(name = "vid") String vid) {
         LotteryUser currentUser = simpleAuthService.getCurrentUser(vid);
         GenshinWishDTO genshinWishDTO = genshinWishService.wishByPoolId(n, poolId, currentUser);
+
+        // 抽奖完之后更新用户数据到 redis 数据库...
         simpleAuthService.updateUser(vid, currentUser);
         return Result.ok(genshinWishDTO);
     }

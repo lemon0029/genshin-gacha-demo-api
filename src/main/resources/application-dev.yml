@@ -12,6 +12,10 @@ spring:
     show-sql: true
     open-in-view: false
 
+  redis:
+    host: localhost
+    port: 6379
+
 mihoyo:
   account-id: your account id
   cookie-token: your cookie token
