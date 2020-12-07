@@ -1,5 +1,6 @@
 package me.yec.core;
 
+import me.yec.model.support.wishpool.GenshinEventWishPool;
 import me.yec.model.support.wishpool.GenshinWishPool;
 import me.yec.model.support.wishpool.GenshinWishPoolType;
 import me.yec.model.support.wishpool.StandardPool;
@@ -15,6 +16,8 @@ import java.util.List;
  * @date 12/6/20 12:25 PM
  */
 public class LotteryUser implements Serializable {
+    private static final long serialVersionUID = 4965803945133604562L;
+
     public List<GenshinWishPool> wishPools = new ArrayList<>();
 
     /**
@@ -32,6 +35,18 @@ public class LotteryUser implements Serializable {
         }
         assert standardPool != null;
         return standardPool;
+    }
+
+    public GenshinEventWishPool getEventPool(String poolId) {
+        GenshinEventWishPool eventWishPool = null;
+        for (GenshinWishPool wishPool : wishPools) {
+            if (wishPool.wishPoolId.equals(poolId)) {
+                eventWishPool = (GenshinEventWishPool) wishPool;
+                break;
+            }
+        }
+        assert eventWishPool != null;
+        return eventWishPool;
     }
 
 }

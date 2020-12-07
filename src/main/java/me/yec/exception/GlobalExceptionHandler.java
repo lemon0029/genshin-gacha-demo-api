@@ -1,5 +1,6 @@
 package me.yec.exception;
 
+import me.yec.model.support.Result;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,9 +23,9 @@ public class GlobalExceptionHandler {
      * @return HTTP响应体
      */
     @ExceptionHandler(AppException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String appExceptionHandler(AppException e) {
-        return e.getMessage();
+//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result<String> appExceptionHandler(AppException e) {
+        return Result.error(e.getMessage());
     }
 
     /**
@@ -35,18 +36,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String missingParameterHandler(MissingServletRequestParameterException e) {
-        return e.getMessage();
-    }
-
-    /**
-     * 空指针异常处理（一般不会抛出这个异常...）
-     *
-     * @return HTTP响应体
-     */
-    @ExceptionHandler(NullPointerException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String nullPointerHandler() {
-        return "NullPointerException";
+    public Result<String> missingParameterHandler(MissingServletRequestParameterException e) {
+        return Result.error(e.getMessage());
     }
 }

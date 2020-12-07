@@ -40,6 +40,10 @@ public class GenshinWishServiceImpl implements GenshinWishService {
         wishOM.setLotteryUser(lotteryUser);
         List<Long> giftIds = wishOM.wishByPoolId(poolId, n);
 
+        // 也许有可能出现这种情况
+        if (giftIds == null) {
+            throw new AppException("抽奖结果集异常");
+        }
         // 根据指定的 Ids 获取 GenshinItem 列表
         List<GenshinItem> giftById = genshinItemService.findGiftById(giftIds);
         genshinWishDTO.setWishGifts(giftById);

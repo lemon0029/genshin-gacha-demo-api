@@ -8,6 +8,8 @@ import java.io.Serializable;
  */
 public class CharacterEventPool extends GenshinEventWishPool implements Serializable {
 
+    private static final long serialVersionUID = 8480268142659091689L;
+
     public CharacterEventPool() {
         type = GenshinWishPoolType.CHARACTER_EVENT;
     }

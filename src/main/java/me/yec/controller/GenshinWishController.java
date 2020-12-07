@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author yec
  * @date 12/6/20 6:37 PM
@@ -25,17 +27,17 @@ public class GenshinWishController {
     private final SimpleAuthService simpleAuthService;
 
     @GetMapping("/statistic")
-    public Result<GenshinWishStatisticDTO> findStatisticByPoolId(@RequestParam(name = "poolId") String poolId,
-                                                                 @RequestParam(name = "vid") String vid) {
-        LotteryUser currentUser = simpleAuthService.getCurrentUser(vid);
+    public Result<GenshinWishStatisticDTO> findStatisticByPoolId(
+            @RequestParam(name = "poolId") String poolId, HttpServletRequest request) {
+        LotteryUser currentUser = simpleAuthService.getCurrentUser(request.getHeader("vid"));
         GenshinWishStatisticDTO byPoolId = genshinWishService.findStatisticByPoolId(poolId, currentUser);
         return Result.ok(byPoolId);
     }
 
     @GetMapping
     public Result<GenshinWishDTO> wish(@RequestParam(name = "n", required = false, defaultValue = "10") int n,
-                                       @RequestParam(name = "poolId") String poolId,
-                                       @RequestParam(name = "vid") String vid) {
+                                       @RequestParam(name = "poolId") String poolId, HttpServletRequest request) {
+        String vid = request.getHeader("vid");
         LotteryUser currentUser = simpleAuthService.getCurrentUser(vid);
         GenshinWishDTO genshinWishDTO = genshinWishService.wishByPoolId(n, poolId, currentUser);
 

@@ -33,6 +33,8 @@ public class WebAppConfig implements WebMvcConfigurer {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
                         .allowedOrigins("*")
+                        .allowedHeaders("Access-Control-Allow-Origin") // 允许跨域请求
+                        .allowedHeaders("Access-Control-Allow-Headers") // 允许跨域携带自定义请求头
 //                        .allowCredentials(true)
                         .allowedMethods("GET", "POST", "DELETE", "PUT", "PATCH")
                         .maxAge(3600);
@@ -49,6 +51,11 @@ public class WebAppConfig implements WebMvcConfigurer {
         return redisTemplate;
     }
 
+    /**
+     * 添加拦截器
+     *
+     * @param registry 拦截器注册对象
+     */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)

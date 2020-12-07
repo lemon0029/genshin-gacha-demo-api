@@ -23,6 +23,4 @@ public class SimpleAuthController {
         String s = simpleAuthService.doAuth();
         return Result.ok(s);
     }
-
-
 }

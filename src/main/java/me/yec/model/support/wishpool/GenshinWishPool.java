@@ -14,6 +14,9 @@ import java.util.List;
  */
 @Data
 public class GenshinWishPool implements Serializable {
+
+    private static final long serialVersionUID = 4244075773388875279L;
+
     public GenshinWishPoolType type;
     public String wishPoolId;
     public int lastGet4Count = 0; // 上一次获得4星到现在抽了几次

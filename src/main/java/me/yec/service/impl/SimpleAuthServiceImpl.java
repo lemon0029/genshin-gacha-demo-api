@@ -2,6 +2,7 @@ package me.yec.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import me.yec.core.LotteryUser;
+import me.yec.exception.AppException;
 import me.yec.service.LotteryUserService;
 import me.yec.service.SimpleAuthService;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -41,7 +42,14 @@ public class SimpleAuthServiceImpl implements SimpleAuthService {
     @Override
     public LotteryUser getCurrentUser(String vid) {
         ValueOperations<String, LotteryUser> opsForValue = lotteryUserRedisTemplate.opsForValue();
-        return opsForValue.get(vid);
+        LotteryUser lotteryUser = opsForValue.get(vid);
+
+        // 虽然拦截器会每次查找数据库中有没有这个 vid 对应的用户
+        // 为了保险期间，这里还是做个非空判断
+        if (lotteryUser == null) {
+            throw new AppException(vid + " is not fount");
+        }
+        return lotteryUser;
     }
 
     @Override

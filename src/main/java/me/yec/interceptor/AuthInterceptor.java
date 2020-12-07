@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import me.yec.core.LotteryUser;
 import me.yec.model.support.Result;
+import org.apache.http.HttpStatus;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
@@ -28,24 +29,21 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
-        String vid = request.getParameter("vid");
+
+        // 允许跨域请求（前端在请求头里面携带了 vid 这个字段）
+        response.setHeader("Access-Control-Allow-Headers", "*");
+        response.setHeader("Access-Control-Allow-Origin", "*");
+
+        // 从请求头中取出 vid 即可
+        String vid = request.getHeader("vid");
         ValueOperations<String, LotteryUser> ops = lotteryUserRedisTemplate.opsForValue();
-        if (vid == null) {
-            Result<Object> error = Result.error(null);
-            ServletOutputStream outputStream = response.getOutputStream();
-            mapper.writeValue(outputStream, error);
-            return false;
-        }
-
-        LotteryUser lotteryUser = ops.get(vid);
-
-        if (lotteryUser == null) {
-            Result<Object> error = Result.error(null);
+        if (vid == null || ops.get(vid) == null) {
+            Result<Object> error = Result.error(HttpStatus.SC_UNAUTHORIZED, "unauthorized", null);
             ServletOutputStream outputStream = response.getOutputStream();
             mapper.writeValue(outputStream, error);
             return false;
         } else {
-            return super.preHandle(request, response, handler);
+            return true;
         }
     }
 }

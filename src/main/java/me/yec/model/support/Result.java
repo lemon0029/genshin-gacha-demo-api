@@ -4,6 +4,8 @@ import lombok.Data;
 import org.springframework.http.HttpStatus;
 
 /**
+ * 响应结果统一封装
+ *
  * @author yec
  * @date 12/4/20 9:37 PM
  */
@@ -22,8 +24,9 @@ public class Result<T> {
         return result;
     }
 
-    public static <S> Result<S> error(S data) {
-        return error(HttpStatus.FORBIDDEN.value(), "error", data);
+
+    public static <S> Result<S> error(String message) {
+        return error(HttpStatus.INTERNAL_SERVER_ERROR.value(), message, null);
     }
 
     public static <S> Result<S> ok(int code, String message, S data) {
