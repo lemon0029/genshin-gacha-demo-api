@@ -26,5 +26,4 @@ logging:
     web: debug
     me.yec: debug
   file:
-    name: app.log
-    path: ${user.home}/.genshin-gacha-demo/log/
+    path: ${user.home}/.genshin-gacha-demo/log
