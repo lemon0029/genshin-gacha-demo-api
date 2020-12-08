@@ -20,6 +20,18 @@ public class LotteryUser implements Serializable {
 
     public List<GenshinWishPool> wishPools = new ArrayList<>();
 
+    public GenshinWishPool getPoolById(String poolId) {
+        GenshinWishPool eventWishPool = null;
+        for (GenshinWishPool wishPool : wishPools) {
+            if (wishPool.wishPoolId.equals(poolId)) {
+                eventWishPool = wishPool;
+                break;
+            }
+        }
+        assert eventWishPool != null;
+        return eventWishPool;
+    }
+
     /**
      * 获取常驻池，目前来说常驻池只有一个
      *

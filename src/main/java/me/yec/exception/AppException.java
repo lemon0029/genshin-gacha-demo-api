@@ -6,6 +6,8 @@ package me.yec.exception;
  */
 public class AppException extends RuntimeException {
 
+    private static final long serialVersionUID = -3746813657890820606L;
+
     public AppException(String msg) {
         super(msg);
     }

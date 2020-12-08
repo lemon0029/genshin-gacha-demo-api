@@ -1,6 +1,7 @@
 package me.yec.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import me.yec.model.dto.GenshinInventoryDTO;
 import me.yec.model.entity.item.GenshinCharacter;
 import me.yec.model.entity.item.GenshinItem;
 import me.yec.model.entity.item.GenshinItemType;
@@ -8,11 +9,14 @@ import me.yec.model.entity.item.GenshinWeapon;
 import me.yec.repository.GenshinCharacterRepository;
 import me.yec.repository.GenshinWeaponRepository;
 import me.yec.service.GenshinItemService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author yec
@@ -92,5 +96,48 @@ public class GenshinItemServiceImpl implements GenshinItemService {
     public List<GenshinWeapon> findAllGenshinWeapon(String sort, String order) {
         Sort.Direction direction = checkOrder(order);
         return genshinWeaponRepository.findAll(Sort.by(direction, sort));
+    }
+
+    @Override
+    public List<GenshinInventoryDTO> findAllByIds(List<Long> ids, String type, String sort, String order) {
+        List<GenshinInventoryDTO> genshinInventoryDTOS = new ArrayList<>();
+        List<GenshinWeapon> weaponList = genshinWeaponRepository.findAllById(ids);
+        List<GenshinCharacter> characterList = genshinCharacterRepository.findAllById(ids);
+
+        HashSet<Long> longs = new HashSet<>(ids);
+        for (Long id : longs) {
+
+            GenshinInventoryDTO genshinInventoryDTO = new GenshinInventoryDTO();
+            Optional<GenshinWeapon> weaponOptional = weaponList
+                    .stream()
+                    .filter(genshinWeapon -> genshinWeapon.getId().equals(id))
+                    .findFirst();
+            // 如果是武器
+            if (weaponOptional.isPresent()) {
+                GenshinWeapon o = weaponOptional.get();
+                BeanUtils.copyProperties(o, genshinInventoryDTO);
+                long count = ids.stream().filter(x -> x.equals(id)).count();
+                genshinInventoryDTO.setCount(count);
+            } else {
+                Optional<GenshinCharacter> characterOptional = characterList
+                        .stream()
+                        .filter(genshinCharacter -> genshinCharacter.getId().equals(id))
+                        .findFirst();
+
+                // 不是武器就一定是角色
+                assert characterOptional.isPresent();
+                GenshinCharacter genshinCharacter = characterOptional.get();
+                BeanUtils.copyProperties(genshinCharacter, genshinInventoryDTO);
+                long count = ids.stream().filter(x -> x.equals(id)).count();
+                genshinInventoryDTO.setCount(count);
+            }
+
+            genshinInventoryDTOS.add(genshinInventoryDTO);
+        }
+
+        // 按星级降序
+        genshinInventoryDTOS.sort((t0, t1) -> t1.getRanting() - t0.getRanting());
+
+        return genshinInventoryDTOS;
     }
 }

@@ -1,33 +1,28 @@
 package me.yec.core;
 
+import me.yec.model.support.wishpool.StandardPool;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 /**
  * @author yec
  * @date 12/6/20 12:23 PM
  */
+@SpringBootTest
 class LotteryOMTest {
+
+    @Autowired
+    private WishOM wishOM;
+
 
     @Test
     void gacha() {
-
-        for (int i = 0; i < 10; i++) {
-            LotteryUser lotteryUser = new LotteryUser();
-            List<Integer> gacha = LotteryOM.gacha(10, 0, 0);
-            System.out.println(gacha);
-        }
-
-    }
-
-    @Test
-    void gacha90() {
         LotteryUser lotteryUser = new LotteryUser();
-
-        List<Integer> gacha = LotteryOM.gacha(90, 0, 0);
-        for (Integer integer : gacha) {
-            System.out.println(integer);
-        }
+        wishOM.setLotteryUser(lotteryUser);
+        wishOM.wishByPoolId("4e92901acfa995f3eed9a7a26ab97acc6f65c6", 100);
+        StandardPool standardPool = lotteryUser.getStandardPool();
+        System.out.println(standardPool);
     }
+
 }

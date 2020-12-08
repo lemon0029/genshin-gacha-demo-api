@@ -7,7 +7,7 @@ import me.yec.exception.AppException;
 import me.yec.model.dto.GenshinWishDTO;
 import me.yec.model.dto.GenshinWishStatisticDTO;
 import me.yec.model.entity.item.GenshinItem;
-import me.yec.model.support.wishpool.GenshinWishPool;
+import me.yec.model.support.wishpool.*;
 import me.yec.service.GenshinItemService;
 import me.yec.service.GenshinWishService;
 import org.springframework.stereotype.Service;
@@ -30,6 +30,19 @@ public class GenshinWishServiceImpl implements GenshinWishService {
     public GenshinWishStatisticDTO findStatisticByPoolId(String poolId, LotteryUser lotteryUser) {
         GenshinWishPool wishPool = getGenshinWishPool(poolId, lotteryUser);
         return GenshinWishStatisticDTO.getInstance(wishPool);
+    }
+
+    @Override
+    public void reset(String poolId, LotteryUser lotteryUser) {
+        GenshinWishPool pool = lotteryUser.getPoolById(poolId);
+        GenshinWishPool newPool;
+        if (pool.type == GenshinWishPoolType.WEAPON_EVENT) newPool = new WeaponEventPool();
+        else if (pool.type == GenshinWishPoolType.STANDARD) newPool = new StandardPool();
+        else newPool = new CharacterEventPool();
+
+        lotteryUser.wishPools.remove(pool);
+        newPool.wishPoolId = poolId;
+        lotteryUser.wishPools.add(newPool);
     }
 
     @Override

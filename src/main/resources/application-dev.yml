@@ -19,8 +19,12 @@ spring:
 mihoyo:
   account-id: your account id
   cookie-token: your cookie token
+  img-save-dir: ${user.home}/.genshin-gacha-demo/img/
 
 logging:
   level:
     web: debug
     me.yec: debug
+  file:
+    name: app.log
+    path: ${user.home}/.genshin-gacha-demo/log/

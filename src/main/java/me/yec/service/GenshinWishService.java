@@ -12,6 +12,8 @@ public interface GenshinWishService {
 
     GenshinWishStatisticDTO findStatisticByPoolId(String poolId, LotteryUser lotteryUser);
 
+    void reset(String poolId, LotteryUser lotteryUser);
+
     /**
      * 抽奖方法
      *
