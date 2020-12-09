@@ -85,7 +85,7 @@ spring:
 
 > 注意，由于项目所需要的数据均来自网络，该项目采取定时任务抓取资源，而其中两个网络接口需要个人米游社的 `cookie` 信息，所以需要填写正确的 cookie 确保项目启动抓取数据成功。
 >
-> 具体的获取方法是：打开[米游社官网](https://bbs.mihoyo.com/ys/)， 登录之后 F12 调出控制台，切换到 `Application` 一栏，选中 `Cookies` ，在其中把 `cookie_token` 和 `account_id` 复制粘贴到项目的配置文件中：
+> 具体的获取方法是：打开[米游社官网](https://bbs.mihoyo.com/ys/)，登录之后 F12 调出控制台，切换到 `Application` 一栏，选中 `Cookies` ，在其中把 `cookie_token` 和 `account_id` 复制粘贴到项目的配置文件中：
 
 ```yaml
 mihoyo:
@@ -94,9 +94,20 @@ mihoyo:
   img-save-dir: ${user.home}/.genshin-gacha-demo/img/
 ```
 
+### 配置定时任务
+
+同时还需要注意的是，如果配置好数据库信息之后第一次启动项目 jpa
+会自动生成数据表，而数据是没有的，而我设置的定时任务第一次延迟比较长（避免开发频繁启动项目然后频繁请求米哈游的接口），所以第一次启动将延迟时间修改短一点，之后再修改回来，只涉及两个类的配置修改：`schedule`
+包下的 `FetchGenshinGachaPoolData` 和 `FetchGenshinItemData` 类，将其中的所有方法的 initailDelay 修改小一点（毫秒为单位），之后再将其改回来（数据半个月抓取一次就足够了）
+
+```java
+@Scheduled(initialDelay = 600, fixedDelay = 864000000)
+```
+
 ### 启动项目
 
-修改完这些配置之后就可以启动项目了，之后前端启动之后就OK了。确保定时任务正常执行了（后于 JPA 创建数据表，先于前端调用接口，具体的参见 `schedule` 包。
+修改完这些配置之后就可以启动项目了，之后前端启动之后就OK了。
+
 ![](https://yec-dev.oss-cn-guangzhou.aliyuncs.com/DeepinScreenshot_select-area_20201209211023.png)
 
 
