@@ -47,18 +47,6 @@ git clone https://github.com/imtin/genshin-gacha-demo-api.git
 
 ## 使用
 
-### 配置启用环境
-
-> 由于我有一套本地环境，因此需要手动切换成 dev （local 只是隐藏了一些隐私数据）
-
-然后使用 idea 打开项目，将项目配置文件改为 `dev` ：
-
-```yaml
-spring:
-  profiles:
-    active: dev
-```
-
 ### 配置数据库连接信息
 
 配置 `application-dev.yml` 中数据库连接信息：
