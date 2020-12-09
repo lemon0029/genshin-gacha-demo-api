@@ -94,16 +94,6 @@ mihoyo:
   img-save-dir: ${user.home}/.genshin-gacha-demo/img/
 ```
 
-### 配置定时任务
-
-同时还需要注意的是，如果配置好数据库信息之后第一次启动项目 jpa
-会自动生成数据表，而数据是没有的，而我设置的定时任务第一次延迟比较长（避免开发频繁启动项目然后频繁请求米哈游的接口），所以第一次启动将延迟时间修改短一点，之后再修改回来，只涉及两个类的配置修改：`schedule`
-包下的 `FetchGenshinGachaPoolData` 和 `FetchGenshinItemData` 类，将其中的所有方法的 initailDelay 修改小一点（毫秒为单位），之后再将其改回来（数据半个月抓取一次就足够了）
-
-```java
-@Scheduled(initialDelay = 600, fixedDelay = 864000000)
-```
-
 ### 启动项目
 
 修改完这些配置之后就可以启动项目了，之后前端启动之后就OK了。
