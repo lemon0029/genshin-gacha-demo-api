@@ -101,7 +101,7 @@ mihoyo:
 包下的 `FetchGenshinGachaPoolData` 和 `FetchGenshinItemData` 类，将其中的所有方法的 initailDelay 修改小一点（毫秒为单位），之后再将其改回来（数据半个月抓取一次就足够了）
 
 ```java
-@Scheduled(initialDelay = 600, fixedDelay = 864000000)
+@Scheduled(initialDelay = 6000, fixedDelay = 864000000)
 ```
 
 ### 启动项目
