@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * 抽奖工具类
+ *
  * @author yec
  * @date 12/7/20 3:17 PM
  */

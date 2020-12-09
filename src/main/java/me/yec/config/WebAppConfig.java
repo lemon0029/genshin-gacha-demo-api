@@ -14,6 +14,12 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
+ * web 项目配置类
+ * - 注册权限拦截器
+ * - 添加跨域配置
+ * - 添加静态资源映射配置
+ * - 注入 RedisTemplate 实例
+ *
  * @author yec
  * @date 12/6/20 6:59 PM
  */
@@ -21,11 +27,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebAppConfig implements WebMvcConfigurer {
 
     private AuthInterceptor authInterceptor;
-    private MihoyoProperties mihoyoProperties;
+    private AppProperties appProperties;
 
     @Autowired
-    public void setMihoyoProperties(MihoyoProperties mihoyoProperties) {
-        this.mihoyoProperties = mihoyoProperties;
+    public void setMihoyoProperties(AppProperties appProperties) {
+        this.appProperties = appProperties;
     }
 
     @Autowired
@@ -57,7 +63,7 @@ public class WebAppConfig implements WebMvcConfigurer {
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String getImgSaveDir = mihoyoProperties.getImgSaveDir();
+        String getImgSaveDir = appProperties.getImgSaveDir();
         registry.addResourceHandler("img/**")
                 .addResourceLocations("file:" + getImgSaveDir);
     }

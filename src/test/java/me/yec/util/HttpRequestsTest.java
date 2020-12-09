@@ -1,6 +1,6 @@
 package me.yec.util;
 
-import me.yec.config.MihoyoProperties;
+import me.yec.config.AppProperties;
 import org.apache.http.message.BasicHeader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,13 +15,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class HttpRequestsTest {
 
     @Autowired
-    private MihoyoProperties mihoyoProperties;
+    private AppProperties appProperties;
     private BasicHeader cookie;
 
     @BeforeEach
     void initCookie() {
-        String accountId = mihoyoProperties.getAccountId();
-        String cookieToken = mihoyoProperties.getCookieToken();
+        String accountId = appProperties.getAccountId();
+        String cookieToken = appProperties.getCookieToken();
         cookie = new BasicHeader("cookie", String.format("account_id=%s;cookie_token=%s", accountId, cookieToken));
     }
 

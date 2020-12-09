@@ -9,14 +9,14 @@ import org.springframework.boot.test.context.SpringBootTest;
  * @date 12/4/20 5:55 PM
  */
 @SpringBootTest
-public class MihoyoPropertiesTest {
+public class AppPropertiesTest {
 
     @Autowired
-    private MihoyoProperties mihoyoProperties;
+    private AppProperties appProperties;
 
     @Test
     void simpleTest() {
-        System.out.println(mihoyoProperties.getAccountId());
-        System.out.println(mihoyoProperties.getCookieToken());
+        System.out.println(appProperties.getAccountId());
+        System.out.println(appProperties.getCookieToken());
     }
 }

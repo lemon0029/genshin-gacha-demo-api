@@ -9,6 +9,7 @@ import me.yec.core.LotteryUser;
 public interface SimpleAuthService {
     /**
      * 简单的授权认证
+     * 默认返回的 vid 就是当前请求的 session id
      *
      * @return vid （也就是 session id）
      */

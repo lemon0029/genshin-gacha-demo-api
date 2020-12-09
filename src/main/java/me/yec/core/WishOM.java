@@ -1,6 +1,7 @@
 package me.yec.core;
 
 import lombok.extern.slf4j.Slf4j;
+import me.yec.exception.AppException;
 import me.yec.model.entity.gacha.GenshinGachaPoolInfo;
 import me.yec.model.entity.gacha.GenshinGachaPoolItem;
 import me.yec.repository.GenshinGachaPoolInfoRepository;
@@ -39,16 +40,29 @@ public class WishOM {
         this.lotteryUser = lotteryUser;
     }
 
+    /**
+     * 通过奖池 ID 获取奖池的具体信息
+     *
+     * @param poolId 奖池 ID
+     * @return 奖池的具体信息
+     */
     private GenshinGachaPoolInfo findGachaPoolInfo(String poolId) {
         Optional<GenshinGachaPoolInfo> gachaPoolInfoOptional = gachaPoolInfoRepository.findById(poolId);
         // 如果没有直接抛出异常，不做任何处理
         return gachaPoolInfoOptional.orElseThrow(
                 () -> {
                     log.error("gacha pool id[{}] not found", poolId);
-                    return new RuntimeException(String.format("gacha pool id[%s] not found", poolId));
+                    return new AppException(String.format("gacha pool id[%s] not found", poolId));
                 });
     }
 
+    /**
+     * 通过给定的池子 ID 和 抽奖次数抽奖获取物品的 ID
+     *
+     * @param poolId 池子唯一ID
+     * @param n      抽奖次数
+     * @return 抽奖获得的物品 ID 集合
+     */
     public List<Long> wishByPoolId(String poolId, int n) {
 
         GenshinGachaPoolInfo gachaPoolInfo = findGachaPoolInfo(poolId);// 获取池子的类型

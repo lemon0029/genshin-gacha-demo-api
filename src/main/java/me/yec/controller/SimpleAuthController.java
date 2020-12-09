@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
+ * 权限认证控制器（简单实现）
+ * - 认证接口
+ *
  * @author yec
  * @date 12/6/20 8:04 PM
  */

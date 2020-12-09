@@ -1,7 +1,7 @@
 package me.yec.schedule;
 
 import lombok.extern.slf4j.Slf4j;
-import me.yec.config.MihoyoProperties;
+import me.yec.config.AppProperties;
 import me.yec.model.entity.item.GenshinCharacter;
 import me.yec.model.entity.item.GenshinItemType;
 import me.yec.model.entity.item.GenshinWeapon;
@@ -35,19 +35,19 @@ import java.io.IOException;
 public class FetchGenshinItemData {
 
     private static final String BASE_URL = "https://api-takumi.mihoyo.com/event/e20200928calculate/v1";
-    private final MihoyoProperties mihoyoProperties;
+    private final AppProperties appProperties;
     private final GenshinCharacterRepository genshinCharacterRepository;
     private final GenshinWeaponRepository genshinWeaponRepository;
 
-    public FetchGenshinItemData(MihoyoProperties mihoyoProperties,
+    public FetchGenshinItemData(AppProperties appProperties,
                                 GenshinCharacterRepository genshinCharacterRepository,
                                 GenshinWeaponRepository genshinWeaponRepository) {
-        this.mihoyoProperties = mihoyoProperties;
+        this.appProperties = appProperties;
         this.genshinCharacterRepository = genshinCharacterRepository;
         this.genshinWeaponRepository = genshinWeaponRepository;
 
         // 初始化图片保存路径
-        initDir(mihoyoProperties.getImgSaveDir());
+        initDir(appProperties.getImgSaveDir());
     }
 
     /**
@@ -74,8 +74,8 @@ public class FetchGenshinItemData {
      * @return 请求头
      */
     private Header initHeaderOfCookie() {
-        String accountId = mihoyoProperties.getAccountId();
-        String cookieToken = mihoyoProperties.getCookieToken();
+        String accountId = appProperties.getAccountId();
+        String cookieToken = appProperties.getCookieToken();
         return new BasicHeader("cookie", String.format("account_id=%s;cookie_token=%s", accountId, cookieToken));
     }
 
@@ -168,7 +168,7 @@ public class FetchGenshinItemData {
             long id = item.optLong("id");
             String name = item.optString("name");
             String icon = item.optString("icon");
-            String imgSaveDir = mihoyoProperties.getImgSaveDir();
+            String imgSaveDir = appProperties.getImgSaveDir();
             if (!imgSaveDir.endsWith("/")) imgSaveDir += "/";
             String saveImageName = saveImageToDirFromUrl(icon, imgSaveDir);
             icon = "img/" + saveImageName;

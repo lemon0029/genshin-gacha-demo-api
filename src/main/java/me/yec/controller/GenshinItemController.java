@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
+ * 物品控制器
+ * - 所有物品信息接口
+ * - 武器信息接口
+ * - 角色信息接口
+ *
  * @author yec
  * @date 12/4/20 9:34 PM
  */

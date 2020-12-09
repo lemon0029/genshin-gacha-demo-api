@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * 抽奖物品业务实现类
+ *
  * @author yec
  * @date 12/4/20 9:39 PM
  */
@@ -75,10 +77,16 @@ public class GenshinItemServiceImpl implements GenshinItemService {
         return genshinItems;
     }
 
+    /**
+     * 给定字符串指定排序方向
+     *
+     * @param order 字符串（asc...）
+     * @return Direction 对象
+     */
     private Sort.Direction checkOrder(String order) {
-        if ("asc".equals(order)) {
+        if ("asc".equalsIgnoreCase(order)) {
             return Sort.Direction.ASC;
-        } else if ("desc".equals(order)) {
+        } else if ("desc".equalsIgnoreCase(order)) {
             return Sort.Direction.DESC;
         } else {
             return Sort.Direction.ASC;

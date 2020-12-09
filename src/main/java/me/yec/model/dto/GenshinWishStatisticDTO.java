@@ -24,6 +24,12 @@ public class GenshinWishStatisticDTO {
     public Integer totalGet4UpCount; // 总共获得4星UP个数
     public Integer totalGet5UpCount; // 总共获得5星UP个数
 
+    /**
+     * 获取一个统计DTO对象，通过给定的奖池初始化DTO的属性值
+     *
+     * @param wishPool 指定奖池
+     * @return DTO对象
+     */
     public static GenshinWishStatisticDTO getInstance(GenshinWishPool wishPool) {
         GenshinWishStatisticDTO statisticDTO = new GenshinWishStatisticDTO();
         statisticDTO.wishPoolId = wishPool.wishPoolId;

@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
+ * 抽奖仓库控制器
+ *
  * @author yec
  * @date 12/7/20 9:05 PM
  */

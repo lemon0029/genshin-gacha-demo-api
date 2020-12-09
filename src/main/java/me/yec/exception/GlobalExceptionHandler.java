@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
      * @return HTTP响应体
      */
     @ExceptionHandler(AppException.class)
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<String> appExceptionHandler(AppException e) {
         return Result.error(e.getMessage());
     }

@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
+ * 抽奖用户业务实现类
+ *
  * @author yec
  * @date 12/6/20 6:52 PM
  */

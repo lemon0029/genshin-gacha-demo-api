@@ -15,12 +15,15 @@ import java.security.SecureRandom;
 import java.util.List;
 
 /**
+ * HTTP请求工具类
+ *
  * @author yec
  * @date 12/4/20 6:00 PM
  */
 @Slf4j
 public class Requests {
 
+    // USER-AGENT 集合
     private static final List<String> USER_AGENTS;
 
     static {
@@ -46,6 +49,12 @@ public class Requests {
         return get(url, null);
     }
 
+    /**
+     * 通过HTTP请求获取字节流
+     *
+     * @param url 请求 URL
+     * @return 字节流（字节数组）
+     */
     public static byte[] getBytes(String url) {
         HttpUriRequest build = baseRequestBuilder(HttpGet.METHOD_NAME, url).build();
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {

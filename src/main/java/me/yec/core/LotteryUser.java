@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 抽奖用户
+ * 抽奖用户类
+ * - 用户的所有抽奖池信息
  *
  * @author yec
  * @date 12/6/20 12:25 PM

@@ -15,6 +15,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * 权限认证拦截器
+ * 除了 /api/auth 接口外，其它任何接口都需要携带 vid 请求头来获取资源
+ *
  * @author yec
  * @date 12/6/20 8:02 PM
  */

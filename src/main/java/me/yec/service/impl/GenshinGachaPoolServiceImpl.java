@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * 奖池业务实现类
+ *
  * @author yec
  * @date 12/6/20 6:13 PM
  */

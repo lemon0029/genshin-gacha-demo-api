@@ -15,6 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 
 /**
+ * 祈愿控制类
+ * - 祈愿接口
+ * - 重置抽奖池接口
+ * - 奖池信息统计接口
+ *
  * @author yec
  * @date 12/6/20 6:37 PM
  */

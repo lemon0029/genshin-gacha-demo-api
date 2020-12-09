@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
+ * 奖池控制器
+ *
  * @author yec
  * @date 12/6/20 6:10 PM
  */

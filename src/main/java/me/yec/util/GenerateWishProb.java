@@ -30,17 +30,19 @@ public class GenerateWishProb {
         return probMap.get(gachaPoolInfo.getId());
     }
 
+
     /**
-     * 项目启动初始化所有池子的概率
-     * 同时根据池子的类型设定保底
+     * 获取奖池概率
+     *
+     * @param gachaPoolInfo 指定奖池的所有信息
      */
     private static void generateWishPoolProb(GenshinGachaPoolInfo gachaPoolInfo) {
         HashMap<String, Number> stringDoubleHashMap = new HashMap<>();
-        stringDoubleHashMap.put("r3Prob", gachaPoolInfo.getR3Prob() / 100);
-        stringDoubleHashMap.put("r4Prob", gachaPoolInfo.getR4Prob() / 100);
-        stringDoubleHashMap.put("r5Prob", gachaPoolInfo.getR5Prob() / 100);
-        stringDoubleHashMap.put("r4UpProb", gachaPoolInfo.getR4UpProb() / 100);
-        stringDoubleHashMap.put("r5UpProb", gachaPoolInfo.getR5UpProb() / 100);
+        stringDoubleHashMap.put("r3Prob", gachaPoolInfo.getR3Prob());
+        stringDoubleHashMap.put("r4Prob", gachaPoolInfo.getR4Prob());
+        stringDoubleHashMap.put("r5Prob", gachaPoolInfo.getR5Prob());
+        stringDoubleHashMap.put("r4UpProb", gachaPoolInfo.getR4UpProb());
+        stringDoubleHashMap.put("r5UpProb", gachaPoolInfo.getR5UpProb());
 
         stringDoubleHashMap.put("c4Baodi", 10);
         stringDoubleHashMap.put("c5Baodi", 90);

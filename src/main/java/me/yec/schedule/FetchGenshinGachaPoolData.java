@@ -50,7 +50,6 @@ public class FetchGenshinGachaPoolData {
 
     /**
      * 定时更新池子列表，官方这个接口只有三个正在抽奖的池子，其它的得另外想办法...
-     * <p>
      * 首次运行延时 1 小时后执行（本地没资源的话建议启动就执行，置为0即可）
      */
     @Async
@@ -157,12 +156,14 @@ public class FetchGenshinGachaPoolData {
     /**
      * 将百分比字符串转成浮点数，如：
      * 7.5% -> 7.5 （由于浮点数精度问题，就不除一百了，最后总数还是100）
+     * 还是除一百吧...
+     * 7.5% -> 0.075
      *
      * @param s 字符串
      * @return 浮点类型的的百分数（总数为100）
      */
     private Double strPercentToDouble(String s) {
-        return Double.valueOf(s.replace("%", ""));
+        return Double.parseDouble(s.replace("%", "")) / 100;
     }
 
     /**
