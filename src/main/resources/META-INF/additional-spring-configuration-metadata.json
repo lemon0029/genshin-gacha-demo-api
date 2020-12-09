@@ -9,6 +9,11 @@
       "name": "mihoyo.cookie-token",
       "type": "java.lang.String",
       "description": "Description for mihoyo.cookie-token."
+    },
+    {
+      "name": "mihoyo.img-save-dir",
+      "type": "java.lang.String",
+      "description": "Description for mihoyo.img-save-dir."
     }
   ]
 }
