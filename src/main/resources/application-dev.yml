@@ -4,8 +4,6 @@ spring:
     url: jdbc:mariadb://localhost:3306/genshin_gacha_demo
     username: root
     password: 123456
-    schema: classpath:schema.sql
-#    initialization-mode: always # 项目启动执行初始化数据表 sql
   jpa:
     hibernate:
       ddl-auto: update
