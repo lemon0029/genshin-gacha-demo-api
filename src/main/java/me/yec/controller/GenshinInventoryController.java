@@ -32,12 +32,15 @@ public class GenshinInventoryController {
 
     @GetMapping
     public Result<List<GenshinInventoryDTO>> findAllInInventory(
-            @RequestParam(name = "poolId") String poolId,
+            @RequestParam(name = "poolId", required = false) String poolId,
             @RequestParam(name = "type", required = false, defaultValue = "null") String type,
             @RequestParam(name = "sort", required = false, defaultValue = "id") String sort,
             @RequestParam(name = "order", required = false, defaultValue = "asc") String order,
             HttpServletRequest request) {
         LotteryUser currentUser = simpleAuthService.getCurrentUser(request.getHeader("vid"));
+        if (poolId == null) {
+            poolId = currentUser.getStandardPool().wishPoolId;
+        }
         GenshinWishPool poolById = currentUser.getPoolById(poolId);
         List<Long> wishInventory = poolById.wishInventory;
         List<GenshinInventoryDTO> allByIds = genshinItemService.findAllByIds(wishInventory, type, sort, order);

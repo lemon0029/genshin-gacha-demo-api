@@ -53,7 +53,7 @@ public class FetchGenshinGachaPoolData {
      * 首次运行延时 6 秒后执行（本地有资源的话建议加长延时，比如：360000）
      */
     @Async
-    @Scheduled(initialDelay = 6000, fixedDelay = 864000000)
+    @Scheduled(initialDelay = 600, fixedDelay = 864000000)
     public void fetchGachaList() {
         String url = BASE_URL + "/gacha/list.json";
 
@@ -93,7 +93,7 @@ public class FetchGenshinGachaPoolData {
      * 定时抓取池子的信息，一般来说半个月更新一次就好了
      */
     @Async
-    @Scheduled(initialDelay = 6000, fixedDelay = 864000000)
+    @Scheduled(initialDelay = 600, fixedDelay = 864000000)
     public void fetchGachaPoolInfo() {
         List<GenshinGachaPool> gachaPools = genshinGachaPoolRepository.findAll();
         if (gachaPools.size() == 0) log.info("nothing gacha pool info can updatable");
@@ -215,6 +215,4 @@ public class FetchGenshinGachaPoolData {
             }
         }
     }
-
-
 }

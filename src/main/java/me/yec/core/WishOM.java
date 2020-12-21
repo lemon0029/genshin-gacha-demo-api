@@ -41,22 +41,6 @@ public class WishOM {
     }
 
     /**
-     * 通过奖池 ID 获取奖池的具体信息
-     *
-     * @param poolId 奖池 ID
-     * @return 奖池的具体信息
-     */
-    private GenshinGachaPoolInfo findGachaPoolInfo(String poolId) {
-        Optional<GenshinGachaPoolInfo> gachaPoolInfoOptional = gachaPoolInfoRepository.findById(poolId);
-        // 如果没有直接抛出异常，不做任何处理
-        return gachaPoolInfoOptional.orElseThrow(
-                () -> {
-                    log.error("gacha pool id[{}] not found", poolId);
-                    return new AppException(String.format("gacha pool id[%s] not found", poolId));
-                });
-    }
-
-    /**
      * 通过给定的池子 ID 和 抽奖次数抽奖获取物品的 ID
      *
      * @param poolId 池子唯一ID
@@ -79,4 +63,19 @@ public class WishOM {
         }
     }
 
+    /**
+     * 通过奖池 ID 获取奖池的具体信息
+     *
+     * @param poolId 奖池 ID
+     * @return 奖池的具体信息
+     */
+    private GenshinGachaPoolInfo findGachaPoolInfo(String poolId) {
+        Optional<GenshinGachaPoolInfo> gachaPoolInfoOptional = gachaPoolInfoRepository.findById(poolId);
+        // 如果没有直接抛出异常，不做任何处理
+        return gachaPoolInfoOptional.orElseThrow(
+                () -> {
+                    log.error("gacha pool id[{}] not found", poolId);
+                    return new AppException(String.format("gacha pool id[%s] not found", poolId));
+                });
+    }
 }

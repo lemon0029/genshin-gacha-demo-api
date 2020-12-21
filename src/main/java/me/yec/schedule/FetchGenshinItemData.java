@@ -54,7 +54,7 @@ public class FetchGenshinItemData {
      * 定时抓取原神的角色信息
      */
     @Async
-    @Scheduled(initialDelay = 6000, fixedDelay = 864000000)
+    @Scheduled(initialDelay = 600, fixedDelay = 864000000)
     public void fetchCharacters() {
         fetchData(GenshinItemType.CHARACTER);
     }
@@ -63,7 +63,7 @@ public class FetchGenshinItemData {
      * 定时抓取原神的武器信息
      */
     @Async
-    @Scheduled(initialDelay = 6000, fixedDelay = 864000000)
+    @Scheduled(initialDelay = 600, fixedDelay = 864000000)
     public void fetWeapons() {
         fetchData(GenshinItemType.WEAPON);
     }
@@ -199,7 +199,7 @@ public class FetchGenshinItemData {
         }
     }
 
-    public void fetchData(GenshinItemType type) {
+    private void fetchData(GenshinItemType type) {
         String url;
         if (type == GenshinItemType.CHARACTER) {
             url = BASE_URL + "/avatar/list";
