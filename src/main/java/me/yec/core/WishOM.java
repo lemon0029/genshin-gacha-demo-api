@@ -50,7 +50,7 @@ public class WishOM {
     public List<Long> wishByPoolId(String poolId, int n) {
 
         GenshinGachaPoolInfo gachaPoolInfo = findGachaPoolInfo(poolId);// 获取池子的类型
-        Integer gachaId = gachaPoolInfo.getGachaId();
+        String gachaId = gachaPoolInfo.getGachaId();
         Integer gachaType = gachaPoolInfo.getGachaType();
 
         List<GenshinGachaPoolItem> allItem = gachaPoolItemRepository.findAllByGachaId(gachaId); // 获取池子中的奖励

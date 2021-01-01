@@ -54,7 +54,7 @@ public class FetchGenshinItemData {
      * 定时抓取原神的角色信息
      */
     @Async
-    @Scheduled(initialDelay = 600, fixedDelay = 864000000)
+    @Scheduled(initialDelay = 360000, fixedDelay = 864000000)
     public void fetchCharacters() {
         fetchData(GenshinItemType.CHARACTER);
     }
@@ -63,7 +63,7 @@ public class FetchGenshinItemData {
      * 定时抓取原神的武器信息
      */
     @Async
-    @Scheduled(initialDelay = 600, fixedDelay = 864000000)
+    @Scheduled(initialDelay = 360000, fixedDelay = 864000000)
     public void fetWeapons() {
         fetchData(GenshinItemType.WEAPON);
     }
@@ -213,7 +213,6 @@ public class FetchGenshinItemData {
         String body = Requests.post(url, initHeaderOfCookie(), data);
         // jsonBody 为空则说明转换异常
         JSONObject jsonBody = Requests.parseOf(body);
-
         if (jsonBody != null) {
             // 判断响应内容是否符合预期结果，可能出现 cookie 失效提示需要登录的结果
             if (Requests.respIsError(jsonBody)) {

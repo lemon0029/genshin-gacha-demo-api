@@ -13,5 +13,5 @@ import java.util.List;
 public interface GenshinGachaPoolItemRepository extends JpaRepository<GenshinGachaPoolItem, Integer>,
         JpaSpecificationExecutor<GenshinGachaPoolItem> {
 
-    List<GenshinGachaPoolItem> findAllByGachaId(Integer gachaId);
+    List<GenshinGachaPoolItem> findAllByGachaId(String gachaId);
 }

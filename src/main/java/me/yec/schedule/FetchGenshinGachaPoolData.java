@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * 定时获取原神抽奖池信息
@@ -53,7 +54,7 @@ public class FetchGenshinGachaPoolData {
      * 首次运行延时 6 秒后执行（本地有资源的话建议加长延时，比如：360000）
      */
     @Async
-    @Scheduled(initialDelay = 600, fixedDelay = 864000000)
+    @Scheduled(initialDelay = 360000, fixedDelay = 864000000)
     public void fetchGachaList() {
         String url = BASE_URL + "/gacha/list.json";
 
@@ -107,10 +108,13 @@ public class FetchGenshinGachaPoolData {
                 // 提取数据保存池子信息
                 GenshinGachaPoolInfo gachaPoolInfo = new GenshinGachaPoolInfo();
                 gachaPoolInfo.setId(genshinGachaPool.getId());
-                gachaPoolInfo.setGachaId(jsonBody.optInt("gacha_id"));
+                // 有一些池子不带 gacha_id
+                // gachaPoolInfo.setGachaId(jsonBody.optInt("gacha_id"));
+                String gachaId = UUID.randomUUID().toString();
+                gachaPoolInfo.setGachaId(gachaId);
 
                 String title = jsonBody.optString("title");
-                gachaPoolInfo.setTitle(title);
+                gachaPoolInfo.setTitle(title);  // 改用正则 TODO
                 gachaPoolInfo.setNickTitle(title);
                 gachaPoolInfo.setContent(jsonBody.optString("content"));
                 gachaPoolInfo.setGachaType(jsonBody.optInt("gacha_type"));
@@ -146,9 +150,9 @@ public class FetchGenshinGachaPoolData {
                 JSONArray r4ProbList = jsonBody.optJSONArray("r4_prob_list");
                 JSONArray r3ProbList = jsonBody.optJSONArray("r3_prob_list");
 
-                saveGachaItem(r5ProbList, 5);
-                saveGachaItem(r4ProbList, 4);
-                saveGachaItem(r3ProbList, 3);
+                saveGachaItem(r5ProbList, gachaId);
+                saveGachaItem(r4ProbList, gachaId);
+                saveGachaItem(r3ProbList, gachaId);
             }
         });
     }
@@ -170,23 +174,15 @@ public class FetchGenshinGachaPoolData {
      * 通过给定参数保存 GachaPoolItem 对象到数据库
      *
      * @param jsonArray JSONArray 类型的数据
-     * @param ranting   指定对象的星级（便于后期取数据做概率计算）
+     * @param gachaId   池子的 ID
      */
-    private void saveGachaItem(JSONArray jsonArray, int ranting) {
+    private void saveGachaItem(JSONArray jsonArray, String gachaId) {
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonObject = jsonArray.optJSONObject(i);
             GenshinGachaPoolItem gachaPoolItem = new GenshinGachaPoolItem();
 
-            gachaPoolItem.setGachaId(jsonObject.optInt("gacha_id"));
+            gachaPoolItem.setGachaId(gachaId);
             gachaPoolItem.setUp(jsonObject.optInt("is_up") == 1);
-
-            // Venti 池的概率数据显示不一样...不过一般不用在乎...
-            String probStr;
-            if (jsonObject.optJSONObject("prob") == null)
-                probStr = jsonObject.optString("prob");
-            else
-                probStr = jsonObject.optJSONObject("prob").optString("prob");
-            gachaPoolItem.setProb(strPercentToDouble(probStr));
 
             gachaPoolItem.setName(jsonObject.optString("item_name"));
             gachaPoolItem.setType(jsonObject.optString("item_type"));
@@ -201,9 +197,9 @@ public class FetchGenshinGachaPoolData {
                 gachaPoolItem.setItemId(Long.valueOf(itemId));
             }
 
-            gachaPoolItem.setRanting(ranting);
+            gachaPoolItem.setRanting(Integer.valueOf(jsonObject.optString("rank")));
 
-            /* 由于多个池子包含同样的角色，所以使用子增长 ID
+            /* 由于多个池子包含同样的角色，所以使用自增长 ID
                 而 Spring data jap 在不指定 id 的时候执行 save 方法就是插入
                 因此首先要判断是否包含当前数据再做更新（或插入）
              */

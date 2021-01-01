@@ -15,7 +15,7 @@ public class GenshinGachaPoolInfo {
     @Id
     private String id;
     @Column(name = "gacha_id")
-    private Integer gachaId;
+    private String gachaId;
     private String title;
     @Column(name = "nick_title", updatable = false)
     private String nickTitle;
