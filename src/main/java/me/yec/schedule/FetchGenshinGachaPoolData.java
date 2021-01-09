@@ -21,7 +21,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 定时获取原神抽奖池信息
@@ -96,6 +97,8 @@ public class FetchGenshinGachaPoolData {
     @Async
     @Scheduled(initialDelay = 600, fixedDelay = 864000000)
     public void fetchGachaPoolInfo() {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
         List<GenshinGachaPool> gachaPools = genshinGachaPoolRepository.findAll();
         if (gachaPools.size() == 0) log.info("nothing gacha pool info can updatable");
         gachaPools.forEach(genshinGachaPool -> {
@@ -105,17 +108,38 @@ public class FetchGenshinGachaPoolData {
             JSONObject jsonBody = Requests.parseOf(s);
 
             if (jsonBody != null) {
-                // 提取数据保存池子信息
+                // 提取数据保存池子信息d
                 GenshinGachaPoolInfo gachaPoolInfo = new GenshinGachaPoolInfo();
                 gachaPoolInfo.setId(genshinGachaPool.getId());
-                // 有一些池子不带 gacha_id
-                // gachaPoolInfo.setGachaId(jsonBody.optInt("gacha_id"));
+                /* 有一些池子不带 gacha_id
+                gachaPoolInfo.setGachaId(jsonBody.optInt("gacha_id"));
+                // 也不能直接使用UUID
                 String gachaId = UUID.randomUUID().toString();
-                gachaPoolInfo.setGachaId(gachaId);
+                gachaPoolInfo.setGachaId(genshinGachaPool.getId());  // 直接使用池子的 id （一般不会有重复）*/
 
                 String title = jsonBody.optString("title");
-                gachaPoolInfo.setTitle(title);  // 改用正则 TODO
+                gachaPoolInfo.setTitle(title);
+                // 「<color=#cc9046FF>陵薮</color>市朝」活动祈愿
+                // 「暂别冬都」活动祈愿
+                // 「奔行<color=#757acdFF>世间</color>」常驻祈愿
+                // 其实也暂时不知道怎么改...
+                title = title.replaceFirst("^ ", ""); // 把字符串开头的那个空格去掉
+                Pattern compile = Pattern.compile("<color=(.*?)>");
+                Matcher matcher = compile.matcher(title);
+                title = title.replace("</color>", "</font>");
+                if (matcher.find()) {
+                    String color = title.substring(8, 15);
+                    title = title.replaceFirst("<color=(.*?)>", String.format("<font style='color=%s'>", color));
+                }
+
                 gachaPoolInfo.setNickTitle(title);
+
+                if (title.contains("常驻祈愿")) {
+                    LocalDateTime beginTime = genshinGachaPool.getBeginTime();
+                    String format = dateTimeFormatter.format(beginTime);
+                    gachaPoolInfo.setNickTitle(format);
+                }
+
                 gachaPoolInfo.setContent(jsonBody.optString("content"));
                 gachaPoolInfo.setGachaType(jsonBody.optInt("gacha_type"));
 
@@ -143,6 +167,7 @@ public class FetchGenshinGachaPoolData {
                 String r3BaodiProb = jsonBody.optString("r3_baodi_prob");
                 gachaPoolInfo.setR3BaodiProb(strPercentToDouble(r3BaodiProb));
 
+                // 池子信息可以选择不经常更新...这里就不嫌麻烦了...
                 GenshinGachaPoolInfo save = genshinGachaPoolInfoRepository.save(gachaPoolInfo);
                 log.info("update gacha pool info<{}> success", save.getId());
 
@@ -150,9 +175,9 @@ public class FetchGenshinGachaPoolData {
                 JSONArray r4ProbList = jsonBody.optJSONArray("r4_prob_list");
                 JSONArray r3ProbList = jsonBody.optJSONArray("r3_prob_list");
 
-                saveGachaItem(r5ProbList, gachaId);
-                saveGachaItem(r4ProbList, gachaId);
-                saveGachaItem(r3ProbList, gachaId);
+                saveGachaItem(r5ProbList, gachaPoolInfo.getId());
+                saveGachaItem(r4ProbList, gachaPoolInfo.getId());
+                saveGachaItem(r3ProbList, gachaPoolInfo.getId());
             }
         });
     }

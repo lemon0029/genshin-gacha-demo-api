@@ -35,9 +35,10 @@ public class StandardWishOM {
      */
     public static List<Long> wish(Map<String, Number> mapProb,
                                   LotteryUser lotteryUser,
+                                  String poolId,
                                   List<GenshinGachaPoolItem> items,
                                   int n) {
-        StandardPool pool = lotteryUser.getStandardPool();
+        StandardPool pool = (StandardPool) lotteryUser.getPoolById(poolId);
 
         // 获取抽奖概率
         Double r4prob = (Double) mapProb.get("r4Prob");

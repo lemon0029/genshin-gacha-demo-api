@@ -50,14 +50,14 @@ public class WishOM {
     public List<Long> wishByPoolId(String poolId, int n) {
 
         GenshinGachaPoolInfo gachaPoolInfo = findGachaPoolInfo(poolId);// 获取池子的类型
-        String gachaId = gachaPoolInfo.getGachaId();
+        String gachaId = gachaPoolInfo.getId();
         Integer gachaType = gachaPoolInfo.getGachaType();
 
         List<GenshinGachaPoolItem> allItem = gachaPoolItemRepository.findAllByGachaId(gachaId); // 获取池子中的奖励
         Map<String, Number> probBy = GenerateWishProb.getProbBy(gachaPoolInfo); // 获取池子相关概率
 
         if (gachaType == 200) { // 200 是常驻池
-            return StandardWishOM.wish(probBy, lotteryUser, allItem, n);
+            return StandardWishOM.wish(probBy, lotteryUser, poolId, allItem, n);
         } else { // 角色活动池和武器活动池差不多
             return EventWishOM.wish(probBy, lotteryUser, poolId, allItem, n);
         }

@@ -34,8 +34,8 @@ public class SimpleAuthServiceImpl implements SimpleAuthService {
             lotteryUser = lotteryUserService.init();
         }
 
-        opsForValue.set(httpSession.getId(), lotteryUser);
-        lotteryUserRedisTemplate.expire(httpSession.getId(), 1L, TimeUnit.DAYS); // 默认保存一天
+        // 默认保存一天
+        opsForValue.set(httpSession.getId(), lotteryUser, 1L, TimeUnit.DAYS);
         return httpSession.getId();
     }
 
@@ -55,6 +55,16 @@ public class SimpleAuthServiceImpl implements SimpleAuthService {
     @Override
     public void updateUser(String vid, LotteryUser lotteryUser) {
         ValueOperations<String, LotteryUser> opsForValue = lotteryUserRedisTemplate.opsForValue();
-        opsForValue.set(vid, lotteryUser);
+        Long expire = lotteryUserRedisTemplate.getExpire(vid);
+
+        if (expire != null) {
+            if (expire < 0) {
+                // 一般只会是 -1 吧（没有过期时间）
+                opsForValue.set(vid, lotteryUser);
+            } else {
+                // 存在过期时间则不变（不太严谨....）
+                opsForValue.set(vid, lotteryUser, expire, TimeUnit.SECONDS);
+            }
+        }
     }
 }
