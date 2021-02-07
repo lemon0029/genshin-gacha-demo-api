@@ -8,6 +8,7 @@ import me.yec.model.entity.item.GenshinWeapon;
 import me.yec.repository.GenshinCharacterRepository;
 import me.yec.repository.GenshinWeaponRepository;
 import me.yec.util.Requests;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
@@ -17,10 +18,13 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.DigestUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * 定时获取原神角色/武器信息
@@ -54,6 +58,7 @@ public class FetchGenshinItemData {
      * 定时抓取原神的角色信息
      */
     @Async
+//    @Scheduled(initialDelay = 600, fixedDelay = 864000000)
     @Scheduled(initialDelay = 360000, fixedDelay = 864000000)
     public void fetchCharacters() {
         fetchData(GenshinItemType.CHARACTER);
@@ -63,20 +68,10 @@ public class FetchGenshinItemData {
      * 定时抓取原神的武器信息
      */
     @Async
+//    @Scheduled(initialDelay = 600, fixedDelay = 864000000)
     @Scheduled(initialDelay = 360000, fixedDelay = 864000000)
     public void fetWeapons() {
         fetchData(GenshinItemType.WEAPON);
-    }
-
-    /**
-     * 初始化拼接 cookie （作为请求头）
-     *
-     * @return 请求头
-     */
-    private Header initHeaderOfCookie() {
-        String accountId = appProperties.getAccountId();
-        String cookieToken = appProperties.getCookieToken();
-        return new BasicHeader("cookie", String.format("account_id=%s;cookie_token=%s", accountId, cookieToken));
     }
 
     /**
@@ -92,8 +87,13 @@ public class FetchGenshinItemData {
          * 外链类似：
          * https://uploadstatic.mihoyo.com/hk4e/e20200928calculate/item_icon_745c4j/56e74fae596e40b20d65a666ee5889ed.png
          * https://uploadstatic.mihoyo.com/hk4e/e20200928calculate/item_icon_745c4j/49d06da043a93d0b7abe0833f729152a.png
+         * https://upload-bbs.mihoyo.com/game_record/genshin/character_icon/UI_AvatarIcon_Diluc.png
          */
-        String imageName = url.split("item_icon_.*/")[1];
+        String imageName;
+
+        if (url.contains("game_record")) imageName = url.split("character_icon/")[1];
+        else imageName = url.split("item_icon_.*/")[1];
+
         byte[] bytes = Requests.getBytes(url);
         File file = new File(dir + imageName);
         saveImageToFileFromBytes(file, bytes);
@@ -215,7 +215,7 @@ public class FetchGenshinItemData {
         JSONObject jsonBody = Requests.parseOf(body);
         if (jsonBody != null) {
             // 判断响应内容是否符合预期结果，可能出现 cookie 失效提示需要登录的结果
-            if (Requests.respIsError(jsonBody)) {
+            if (jsonBody.optInt("retcode", -1) != 0 || !"OK".equals(jsonBody.optString("message"))) {
                 log.warn("response body is not expected");
             } else {
                 // 获取具体的数据列表，如果有异常情况 dataList 将为 null
@@ -233,5 +233,101 @@ public class FetchGenshinItemData {
         } else {
             log.info("fetch or update weapon data success");
         }
+    }
+
+    /**
+     * 上面那两个接口，最近发现角色信息有一周的延迟时间了
+     * 这个方法用于抓取新角色信息（查看大佬的仓库）
+     */
+    @Async
+    @Scheduled(initialDelay = 600000, fixedDelay = 864000000)
+    public void fetchCharacterFix() {
+        String url = "https://api-takumi.mihoyo.com/game_record/genshin/api/index?server=cn_gf01&role_id=100076738";
+        String body = Requests.get(url, initHeaderOfCookie());
+
+        JSONObject jsonBody = Requests.parseOf(body);
+        if (jsonBody != null) {
+            // 判断响应内容是否符合预期结果，可能出现 cookie 失效提示需要登录的结果
+            if (jsonBody.optInt("retcode", -1) != 0 || !"OK".equals(jsonBody.optString("message"))) {
+                log.warn("response body is not expected");
+            } else {
+                // 获取具体的数据列表，如果有异常情况 dataList 将为 null
+                JSONArray dataList = jsonBody.optJSONObject("data").optJSONArray("avatars");
+                for (int i = 0; i < dataList.length(); i++) {
+                    JSONObject data = dataList.optJSONObject(i);
+                    String name = data.optString("name");
+
+                    if (name.equals("旅行者")) continue;
+
+                    Optional<GenshinCharacter> genshinCharacterOptional = genshinCharacterRepository.findByName(name);
+                    if (genshinCharacterOptional.isEmpty()) {
+                        String icon = data.optString("image");
+                        String imgSaveDir = appProperties.getImgSaveDir();
+                        if (!imgSaveDir.endsWith("/")) imgSaveDir += "/";
+                        String saveImageName = saveImageToDirFromUrl(icon, imgSaveDir);
+                        icon = "img/" + saveImageName;
+
+                        GenshinCharacter genshinCharacter = new GenshinCharacter();
+                        genshinCharacter.setId(data.optLong("id"));
+                        genshinCharacter.setName(name);
+                        genshinCharacter.setAvatar(icon);
+                        String element = data.optString("element");
+                        int elementAttrId = 0;
+                        switch (element) {
+                            case "Pyro":
+                                elementAttrId = 1;
+                                break;
+                            case "Anemo":
+                                elementAttrId = 2;
+                                break;
+                            case "Geo":
+                                elementAttrId = 3;
+                                break;
+                            case "Electro":
+                                elementAttrId = 5;
+                                break;
+                            case "Hydro":
+                                elementAttrId = 6;
+                                break;
+                            case "Cryo":
+                                elementAttrId = 7;
+                                break;
+                        }
+                        genshinCharacter.setCharacterAttrId(elementAttrId);
+                        genshinCharacter.setRanting(data.optInt("rarity"));
+
+                        genshinCharacterRepository.save(genshinCharacter);
+                        log.info("Add new character [{}] successful", name);
+                    }
+                }
+            }
+        }
+    }
+
+    private String getDS() {
+        String salt = "h8w582wxwgqvahcdkpvdhbh2w9casgfl";
+        long i = System.currentTimeMillis() / 1000;
+        String r = RandomStringUtils.randomAlphanumeric(6);
+        byte[] bytes = String.format("salt=%s&t=%d&r=%s", salt, i, r).getBytes();
+        String s = DigestUtils.md5DigestAsHex(bytes);
+        return String.format("%d,%s,%s", i, r, s);
+    }
+
+    /**
+     * 初始化请求头
+     *
+     * @return 请求头
+     */
+    private List<Header> initHeaderOfCookie() {
+        String accountId = appProperties.getAccountId();
+        String cookieToken = appProperties.getCookieToken();
+        String format = String.format("account_id=%s;cookie_token=%s", accountId, cookieToken);
+        BasicHeader cookie = new BasicHeader("cookie", format);
+
+        BasicHeader ds = new BasicHeader("DS", getDS());
+        BasicHeader appVersion = new BasicHeader("x-rpc-app_version", "2.3.0");
+        BasicHeader clientType = new BasicHeader("x-rpc-client_type", "5");
+        BasicHeader deviceId = new BasicHeader("x-rpc-device_id", "48B68A082635306A9B58B00F5FBB478C");
+        return List.of(cookie, ds, appVersion, clientType, deviceId);
     }
 }

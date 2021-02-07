@@ -4,9 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import me.yec.model.entity.gacha.GenshinGachaPool;
 import me.yec.model.entity.gacha.GenshinGachaPoolInfo;
 import me.yec.model.entity.gacha.GenshinGachaPoolItem;
-import me.yec.repository.GenshinGachaPoolInfoRepository;
-import me.yec.repository.GenshinGachaPoolItemRepository;
-import me.yec.repository.GenshinGachaPoolRepository;
+import me.yec.model.entity.item.GenshinCharacter;
+import me.yec.model.entity.item.GenshinWeapon;
+import me.yec.repository.*;
 import me.yec.util.Requests;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -41,13 +41,19 @@ public class FetchGenshinGachaPoolData {
     private final GenshinGachaPoolRepository genshinGachaPoolRepository;
     private final GenshinGachaPoolInfoRepository genshinGachaPoolInfoRepository;
     private final GenshinGachaPoolItemRepository genshinGachaPoolItemRepository;
+    private final GenshinCharacterRepository genshinCharacterRepository;
+    private final GenshinWeaponRepository genshinWeaponRepository;
 
     public FetchGenshinGachaPoolData(GenshinGachaPoolRepository genshinGachaPoolRepository,
                                      GenshinGachaPoolInfoRepository genshinGachaPoolInfoRepository,
-                                     GenshinGachaPoolItemRepository genshinGachaPoolItemRepository) {
+                                     GenshinGachaPoolItemRepository genshinGachaPoolItemRepository,
+                                     GenshinCharacterRepository genshinCharacterRepository,
+                                     GenshinWeaponRepository genshinWeaponRepository) {
         this.genshinGachaPoolRepository = genshinGachaPoolRepository;
         this.genshinGachaPoolInfoRepository = genshinGachaPoolInfoRepository;
         this.genshinGachaPoolItemRepository = genshinGachaPoolItemRepository;
+        this.genshinCharacterRepository = genshinCharacterRepository;
+        this.genshinWeaponRepository = genshinWeaponRepository;
     }
 
     /**
@@ -55,6 +61,7 @@ public class FetchGenshinGachaPoolData {
      * 首次运行延时 6 秒后执行（本地有资源的话建议加长延时，比如：360000）
      */
     @Async
+//    @Scheduled(initialDelay = 600, fixedDelay = 864000000)
     @Scheduled(initialDelay = 360000, fixedDelay = 864000000)
     public void fetchGachaList() {
         String url = BASE_URL + "/gacha/list.json";
@@ -65,7 +72,7 @@ public class FetchGenshinGachaPoolData {
 
         if (jsonBody != null) {
             // 判断响应内容是否符合预期结果，可能出现 cookie 失效提示需要登录的结果
-            if (Requests.respIsError(jsonBody)) {
+            if (jsonBody.optInt("retcode", -1) != 0 || !"OK".equals(jsonBody.optString("message"))) {
                 log.warn("response body is not expected");
             } else {
                 // 获取具体的数据列表，如果有异常情况 dataList 将为 null
@@ -95,10 +102,9 @@ public class FetchGenshinGachaPoolData {
      * 定时抓取池子的信息，一般来说半个月更新一次就好了
      */
     @Async
-    @Scheduled(initialDelay = 600, fixedDelay = 864000000)
+    @Scheduled(initialDelay = 1000, fixedDelay = 864000000)
+//    @Scheduled(initialDelay = 360000, fixedDelay = 864000000)
     public void fetchGachaPoolInfo() {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
         List<GenshinGachaPool> gachaPools = genshinGachaPoolRepository.findAll();
         if (gachaPools.size() == 0) log.info("nothing gacha pool info can updatable");
         gachaPools.forEach(genshinGachaPool -> {
@@ -111,34 +117,19 @@ public class FetchGenshinGachaPoolData {
                 // 提取数据保存池子信息d
                 GenshinGachaPoolInfo gachaPoolInfo = new GenshinGachaPoolInfo();
                 gachaPoolInfo.setId(genshinGachaPool.getId());
-                /* 有一些池子不带 gacha_id
-                gachaPoolInfo.setGachaId(jsonBody.optInt("gacha_id"));
-                // 也不能直接使用UUID
-                String gachaId = UUID.randomUUID().toString();
-                gachaPoolInfo.setGachaId(genshinGachaPool.getId());  // 直接使用池子的 id （一般不会有重复）*/
 
                 String title = jsonBody.optString("title");
                 gachaPoolInfo.setTitle(title);
-                // 「<color=#cc9046FF>陵薮</color>市朝」活动祈愿
-                // 「暂别冬都」活动祈愿
-                // 「奔行<color=#757acdFF>世间</color>」常驻祈愿
-                // 其实也暂时不知道怎么改...
                 title = title.replaceFirst("^ ", ""); // 把字符串开头的那个空格去掉
                 Pattern compile = Pattern.compile("<color=(.*?)>");
                 Matcher matcher = compile.matcher(title);
                 title = title.replace("</color>", "</font>");
                 if (matcher.find()) {
                     String color = title.substring(8, 15);
-                    title = title.replaceFirst("<color=(.*?)>", String.format("<font style='color=%s'>", color));
+                    title = title.replaceFirst("<color=(.*?)>", String.format("<font style=\"color: %s\">", color));
                 }
 
                 gachaPoolInfo.setNickTitle(title);
-
-                if (title.contains("常驻祈愿")) {
-                    LocalDateTime beginTime = genshinGachaPool.getBeginTime();
-                    String format = dateTimeFormatter.format(beginTime);
-                    gachaPoolInfo.setNickTitle(format);
-                }
 
                 gachaPoolInfo.setContent(jsonBody.optString("content"));
                 gachaPoolInfo.setGachaType(jsonBody.optInt("gacha_type"));
@@ -212,14 +203,12 @@ public class FetchGenshinGachaPoolData {
             gachaPoolItem.setName(jsonObject.optString("item_name"));
             gachaPoolItem.setType(jsonObject.optString("item_type"));
 
-            // 数据源的 itemId 位数比较少，类似与：1003 --> 10000003
-            String itemId = jsonObject.optString("item_id");
             if ("角色".equals(gachaPoolItem.getType())) {
-                String substring = itemId.substring(0, 1);
-                String substring1 = itemId.substring(1);
-                gachaPoolItem.setItemId(Long.valueOf(substring + "0000" + substring1));
-            } else {
-                gachaPoolItem.setItemId(Long.valueOf(itemId));
+                Optional<GenshinCharacter> character = genshinCharacterRepository.findByName(gachaPoolItem.getName());
+                character.ifPresent(genshinCharacter -> gachaPoolItem.setItemId(genshinCharacter.getId()));
+            } else if ("武器".equals(gachaPoolItem.getType())) {
+                Optional<GenshinWeapon> weapon = genshinWeaponRepository.findByName(gachaPoolItem.getName());
+                weapon.ifPresent(genshinWeapon -> gachaPoolItem.setItemId(genshinWeapon.getId()));
             }
 
             gachaPoolItem.setRanting(Integer.valueOf(jsonObject.optString("rank")));

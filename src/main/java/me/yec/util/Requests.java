@@ -12,6 +12,7 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -46,7 +47,7 @@ public class Requests {
      * @return 响应结果体
      */
     public static String get(String url) {
-        return get(url, null);
+        return get(url, Collections.emptyList());
     }
 
     /**
@@ -66,33 +67,34 @@ public class Requests {
         }
     }
 
+
     /**
      * 便捷发起 HTTP 的 GET 请求
      *
-     * @param url    请求 URL
-     * @param header 请求头（项目只用到了 cookie ）
+     * @param url     请求 URL
+     * @param headers 请求头
      * @return 响应结果体
      */
-    public static String get(String url, Header header) {
-        HttpUriRequest uriRequest = baseRequestBuilder(HttpGet.METHOD_NAME, url)
-                .setHeader(header)
-                .build();
-        return executeHttpRequest(uriRequest);
+    public static String get(String url, List<Header> headers) {
+        RequestBuilder requestBuilder = baseRequestBuilder(HttpGet.METHOD_NAME, url);
+        headers.forEach(requestBuilder::addHeader);
+        return executeHttpRequest(requestBuilder.build());
     }
 
     /**
      * 发起 POST 请求
      *
-     * @param url    请求链接
-     * @param header 请求头（一般为 cookie）
-     * @param data   请求数据（一般为 json 格式）
+     * @param url     请求链接
+     * @param headers 请求头
+     * @param data    请求数据（一般为 json 格式）
      * @return 响应体内容
      */
-    public static String post(String url, Header header, String data) {
+    public static String post(String url, List<Header> headers, String data) {
         StringEntity stringEntity = new StringEntity(data, "utf-8");
-        HttpUriRequest uriRequest = baseRequestBuilder(HttpPost.METHOD_NAME, url)
-                .setHeader("Content-Type", "application/json")
-                .setHeader(header)
+        RequestBuilder requestBuilder = baseRequestBuilder(HttpPost.METHOD_NAME, url);
+        headers.forEach(requestBuilder::addHeader);
+        HttpUriRequest uriRequest = requestBuilder
+                .addHeader("Content-Type", "application/json")
                 .setEntity(stringEntity)
                 .build();
         return executeHttpRequest(uriRequest);
@@ -122,16 +124,6 @@ public class Requests {
             log.warn("parse string-data to json-like object error ({})", e.getMessage());
             return null;
         }
-    }
-
-    /**
-     * 判断响应体是否正常
-     *
-     * @param jsonObject JSONObject
-     * @return boolean
-     */
-    public static boolean respIsError(JSONObject jsonObject) {
-        return jsonObject.optInt("retcode", -1) != 0 || !"OK".equals(jsonObject.optString("message"));
     }
 
 
