@@ -73,7 +73,7 @@ spring:
 
 > 注意，由于项目所需要的数据均来自网络，该项目采取定时任务抓取资源，而其中两个网络接口需要个人米游社的 `cookie` 信息，所以需要填写正确的 cookie 确保项目启动抓取数据成功。
 >
-> 具体的获取方法是：打开[米游社官网](https://bbs.mihoyo.com/ys/)，登录之后 F12 调出控制台，切换到 `Application` 一栏，选中 `Cookies` ，在其中把 `cookie_token` 和 `account_id` 复制粘贴到项目的配置文件中：
+> 具体的获取方法是：打开[米游社官网](https://bbs.mihoyo.com/ys/)，登录之后 F12 调出控制台，切换到 `Application` 一栏，选中 `Cookies` ，在其中把 `ltoken(cookie_token)` 和 `ltuid(account_id)` 复制粘贴到项目的配置文件中：
 
 ```yaml
 mihoyo:
